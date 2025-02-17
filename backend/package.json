@@ -1,0 +1,49 @@
+{
+  "name": "speak-up-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Speak Up - Public Feedback Portal",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "typeorm": "typeorm-ts-node-commonjs"
+  },
+  "keywords": [
+    "feedback",
+    "portal",
+    "api",
+    "express",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/yup": "^0.32.0",
+    "bcryptjs": "*",
+    "cors": "*",
+    "dotenv": "*",
+    "express": "*",
+    "express-validator": "*",
+    "formik": "^2.4.6",
+    "helmet": "*",
+    "jsonwebtoken": "*",
+    "morgan": "*",
+    "pg": "*",
+    "sequelize": "*",
+    "yup": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "*",
+    "@types/cors": "*",
+    "@types/express": "*",
+    "@types/jsonwebtoken": "*",
+    "@types/morgan": "*",
+    "@types/node": "*",
+    "@types/pg": "*",
+    "@types/sequelize": "*",
+    "ts-node-dev": "*",
+    "typescript": "*"
+  }
+}
