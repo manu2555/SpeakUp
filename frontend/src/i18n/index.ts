@@ -24,6 +24,7 @@ const resources = {
         signedInAs: 'Signed in as',
         lightMode: 'Switch to Light Mode',
         darkMode: 'Switch to Dark Mode',
+        ENQUIRE: 'Enquire',
       },
       auth: {
         login: 'Login',
@@ -179,6 +180,7 @@ const resources = {
         signedInAs: 'इस रूप में साइन इन',
         lightMode: 'लाइट मोड में बदलें',
         darkMode: 'डार्क मोड में बदलें',
+        ENQUIRE: 'पूछताछ',
       },
       auth: {
         login: 'लॉग इन',

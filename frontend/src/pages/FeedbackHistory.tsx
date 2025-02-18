@@ -65,7 +65,7 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
       case 'ENQUIRE':
         return {
           bgcolor: '#BBE1FA',
-          color: '#3282B8'
+          color: '#1B262C'
         };
       default:
         return {
