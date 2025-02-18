@@ -22,20 +22,17 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
-    "@types/yup": "^0.32.0",
     "bcryptjs": "*",
     "cors": "*",
     "cross-fetch": "^4.1.0",
     "dotenv": "*",
     "express": "*",
     "express-validator": "*",
-    "formik": "^2.4.6",
     "helmet": "*",
     "jsonwebtoken": "*",
     "morgan": "*",
     "pg": "*",
-    "sequelize": "*",
-    "yup": "^1.6.1"
+    "yup": "^1.3.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "*",
@@ -45,7 +42,7 @@
     "@types/morgan": "*",
     "@types/node": "*",
     "@types/pg": "*",
-    "@types/sequelize": "*",
+    "@types/yup": "^0.32.0",
     "ts-node-dev": "*",
     "typescript": "*"
   },
