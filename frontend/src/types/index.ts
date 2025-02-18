@@ -7,15 +7,15 @@ export interface User {
 
 export interface Feedback {
   id: string;
-  type: 'COMPLAINT' | 'SUGGESTION' | 'COMPLIMENT';
+  type: 'COMPLAINT' | 'SUGGESTION' | 'ENQUIRE';
   department: string;
   agency: string;
   subject: string;
   description: string;
   status: 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'REJECTED';
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
+  user_id: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface AuthState {

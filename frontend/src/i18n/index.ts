@@ -44,7 +44,7 @@ const resources = {
         types: {
           COMPLAINT: 'Complaint',
           SUGGESTION: 'Suggestion',
-          COMPLIMENT: 'Compliment'
+          ENQUIRE: 'Enquire'
         },
         statusLabel: 'Status',
         statusOverview: 'Status Overview',
@@ -56,6 +56,7 @@ const resources = {
           REJECTED: 'Rejected'
         },
         department: 'Department',
+        agency: 'Agency',
         subject: 'Subject',
         description: 'Description',
         submit: 'Submit Feedback',
@@ -198,7 +199,7 @@ const resources = {
         types: {
           COMPLAINT: 'शिकायत',
           SUGGESTION: 'सुझाव',
-          COMPLIMENT: 'प्रशंसा'
+          ENQUIRE: 'पूछताछ'
         },
         statusLabel: 'स्थिति',
         statusOverview: 'स्थिति अवलोकन',
@@ -210,6 +211,7 @@ const resources = {
           REJECTED: 'अस्वीकृत'
         },
         department: 'विभाग',
+        agency: 'एजेंसी',
         subject: 'विषय',
         description: 'विवरण',
         submit: 'प्रतिक्रिया जमा करें',

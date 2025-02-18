@@ -62,7 +62,7 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
           bgcolor: '#BBE1FA',
           color: '#0F4C75'
         };
-      case 'COMPLIMENT':
+      case 'ENQUIRE':
         return {
           bgcolor: '#BBE1FA',
           color: '#3282B8'
@@ -174,6 +174,22 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
         </TableCell>
         <TableCell>
           <Chip
+            label={t(`agencies.${feedback.department.toLowerCase()}.${feedback.agency.toLowerCase()}`)}
+            variant="outlined"
+            sx={{ 
+              minWidth: 100,
+              borderColor: '#3282B8',
+              color: '#3282B8',
+              '&:hover': {
+                borderColor: '#0F4C75',
+                color: '#0F4C75'
+              }
+            }}
+            size={isMobile ? "small" : "medium"}
+          />
+        </TableCell>
+        <TableCell>
+          <Chip
             label={t(`feedback.statuses.${feedback.status}`)}
             sx={{ 
               minWidth: 90,
@@ -188,11 +204,13 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
           />
         </TableCell>
         <TableCell>
-          {new Date(feedback.createdAt).toLocaleDateString(undefined, {
+          {feedback.created_at ? new Date(feedback.created_at).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
-          })}
+            hour: '2-digit',
+            minute: '2-digit'
+          }) : 'N/A'}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -249,7 +267,7 @@ const FeedbackHistory = () => {
       resolved: feedbacks.filter((f: Feedback) => f.status === 'RESOLVED').length,
       complaints: feedbacks.filter((f: Feedback) => f.type === 'COMPLAINT').length,
       suggestions: feedbacks.filter((f: Feedback) => f.type === 'SUGGESTION').length,
-      compliments: feedbacks.filter((f: Feedback) => f.type === 'COMPLIMENT').length,
+      enquiries: feedbacks.filter((f: Feedback) => f.type === 'ENQUIRE').length,
     };
     return stats;
   };
@@ -295,13 +313,12 @@ const FeedbackHistory = () => {
             gap: 2,
             width: { xs: '100%', sm: 'auto' }
           }}>
-            <FeedbackIcon sx={{ fontSize: { xs: 32, sm: 40 }, color: 'primary.main' }} />
             <Typography 
-              variant="h4" 
+              variant="h5" 
               component="h1" 
               color="primary.main"
               sx={{ 
-                fontSize: { xs: '1.5rem', sm: '2rem' },
+                fontSize: { xs: '1.2rem', sm: '1.4rem' },
                 flex: { xs: 1, sm: 'none' }
               }}
             >
@@ -347,7 +364,7 @@ const FeedbackHistory = () => {
           {[
             { type: 'COMPLAINT', count: stats.complaints, color: '#1B262C' },
             { type: 'SUGGESTION', count: stats.suggestions, color: '#1B262C' },
-            { type: 'COMPLIMENT', count: stats.compliments, color: '#1B262C' }
+            { type: 'ENQUIRE', count: stats.enquiries, color: '#1B262C' }
           ].map((item) => (
             <Grid item xs={12} sm={6} lg={3} key={item.type}>
               <Card sx={{ 
@@ -425,9 +442,10 @@ const FeedbackHistory = () => {
               <TableHead>
                 <TableRow>
                   <TableCell padding="checkbox" sx={{ width: 40 }} />
-                  <TableCell sx={{ width: '35%' }}>{t('feedback.subject')}</TableCell>
+                  <TableCell sx={{ width: '25%' }}>{t('feedback.subject')}</TableCell>
                   <TableCell sx={{ width: '15%' }}>{t('feedback.type')}</TableCell>
-                  <TableCell sx={{ width: '20%' }}>{t('feedback.department')}</TableCell>
+                  <TableCell sx={{ width: '15%' }}>{t('feedback.department')}</TableCell>
+                  <TableCell sx={{ width: '15%' }}>{t('feedback.agency')}</TableCell>
                   <TableCell sx={{ width: '15%' }}>{t('feedback.statusLabel')}</TableCell>
                   <TableCell sx={{ width: '15%' }}>{t('feedback.date')}</TableCell>
                 </TableRow>
