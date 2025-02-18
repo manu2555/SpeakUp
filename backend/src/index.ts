@@ -110,7 +110,8 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   console.log('=== ✨ End Error Handler ===\n');
 });
 
-const PORT = parseInt(process.env.PORT || '5000', 10);
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 // Start server
 async function startServer() {
@@ -124,12 +125,13 @@ async function startServer() {
       throw new Error('Database connection failed');
     }
     
-    app.listen(PORT, '127.0.0.1', () => {
+    app.listen(PORT, HOST, () => {
       console.log(`
 ✨ Server is ready!
 🚪 Port: ${PORT}
+🏠 Host: ${HOST}
 📝 Mode: ${process.env.NODE_ENV}
-🔗 API URL: http://127.0.0.1:${PORT}/api
+🔗 API URL: http://${HOST}:${PORT}/api
 🌐 Frontend URL: ${process.env.FRONTEND_URL}
       `);
     });
@@ -138,5 +140,16 @@ async function startServer() {
     process.exit(1);
   }
 }
+
+// Add error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled Rejection:', error);
+  process.exit(1);
+});
 
 startServer(); 
