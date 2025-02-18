@@ -2,12 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { findUserById } from '../models/User';
 
-interface AuthRequest extends Request {
-  user?: any;
-}
-
 export const protect = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -56,7 +52,7 @@ export const protect = async (
 };
 
 export const authorize = (...roles: string[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,

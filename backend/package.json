@@ -8,7 +8,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "typeorm": "typeorm-ts-node-commonjs",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "feedback",
@@ -20,9 +21,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.38.4",
     "@types/yup": "^0.32.0",
     "bcryptjs": "*",
     "cors": "*",
+    "cross-fetch": "^4.1.0",
     "dotenv": "*",
     "express": "*",
     "express-validator": "*",
@@ -45,5 +48,8 @@
     "@types/sequelize": "*",
     "ts-node-dev": "*",
     "typescript": "*"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
