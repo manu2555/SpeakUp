@@ -12,10 +12,11 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*", "src/types/*"]
+      "*": ["node_modules/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types"],
-    "lib": ["es6", "dom"],
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node", "express", "yup"],
+    "lib": ["es6"],
     "allowJs": true,
     "noImplicitAny": false,
     "sourceMap": true
