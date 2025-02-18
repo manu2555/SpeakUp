@@ -1,14 +1,14 @@
+import dotenv from 'dotenv';
+// Load environment variables before any other imports
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import routes from './routes';
-import { supabaseAdmin } from './config/database';
+import { supabaseAdmin } from './lib/supabase';
 import { env } from 'process';
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 

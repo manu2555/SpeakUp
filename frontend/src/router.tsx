@@ -3,6 +3,7 @@ import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import SetPassword from './pages/auth/SetPassword';
 import FeedbackForm from './pages/FeedbackForm';
 import FeedbackHistory from './pages/FeedbackHistory';
 import Profile from './pages/Profile';
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <Register />
+  },
+  {
+    path: '/verify-email/:token',
+    element: <SetPassword />
   },
   {
     path: '/',

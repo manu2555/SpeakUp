@@ -1,6 +1,15 @@
 import { Request, Response } from 'express';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
-import { createUser, findUserByEmail, findUserById, comparePassword } from '../models/User';
+import { 
+  createUnverifiedUser, 
+  findUserByEmail, 
+  findUserById, 
+  comparePassword, 
+  verifyEmail as verifyUserEmail,
+  setUserPassword
+} from '../models/User';
+import { sendVerificationEmail } from '../services/email';
+import { supabaseAdmin } from '../lib/supabase';
 
 // Helper function for JWT signing
 const signToken = (payload: { id: string }): string => {
@@ -11,7 +20,7 @@ const signToken = (payload: { id: string }): string => {
   return jwt.sign(payload, secret, options);
 };
 
-// @desc    Register user
+// @desc    Start registration process
 // @route   POST /api/auth/register
 // @access  Public
 export const register = async (req: Request, res: Response) => {
@@ -19,14 +28,14 @@ export const register = async (req: Request, res: Response) => {
     console.log('\n=== 🚀 Starting Registration Process ===');
     console.log('📝 Request body:', { ...req.body, password: '[REDACTED]' });
     
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
 
     // Validate input
-    if (!name || !email || !password) {
+    if (!name || !email) {
       console.log('❌ Validation failed - missing required fields');
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields',
+        message: 'Please provide name and email',
       });
     }
 
@@ -37,31 +46,124 @@ export const register = async (req: Request, res: Response) => {
       console.log('❌ User already exists with email:', email);
       return res.status(400).json({
         success: false,
-        message: 'User already exists',
+        message: 'This email is already registered',
       });
     }
 
-    // Create user
-    console.log('👤 Attempting to create new user...');
-    const user = await createUser({
-      name,
-      email,
-      password,
-      role: 'user',
-    });
+    // Create unverified user
+    console.log('👤 Creating unverified user...');
+    const user = await createUnverifiedUser({ name, email });
 
     if (!user) {
       console.error('❌ User creation failed - returned null');
       throw new Error('Failed to create user');
     }
 
-    // Generate token
-    console.log('🔑 Generating JWT token for user:', user.id);
-    const token = signToken({ id: user.id });
+    // Send verification email
+    try {
+      console.log('📧 Attempting to send verification email...');
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${user.verification_token}`;
+      await sendVerificationEmail(email, name, verificationUrl);
+      console.log('✅ Verification email sent successfully');
+    } catch (emailError: any) {
+      console.error('❌ Failed to send verification email:', emailError);
+      
+      // Delete the unverified user since email failed
+      try {
+        await supabaseAdmin
+          .from('users')
+          .delete()
+          .eq('id', user.id);
+      } catch (deleteError) {
+        console.error('Failed to delete user after email error:', deleteError);
+      }
+
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send verification email. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? emailError.message : undefined
+      });
+    }
 
     // Send response
-    console.log('✅ Registration successful, sending response');
+    console.log('✅ Registration initiated, verification email sent');
     res.status(201).json({
+      success: true,
+      message: 'Registration initiated. Please check your email to verify your account.',
+    });
+    console.log('=== ✨ Registration Process Initiated ===\n');
+  } catch (err: any) {
+    console.error('\n=== ❌ Registration Error ===');
+    console.error('Error details:', err);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+};
+
+// @desc    Verify email and get user details
+// @route   GET /api/auth/verify-email/:token
+// @access  Public
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.params;
+    
+    const user = await verifyUserEmail(token);
+    
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification token',
+      });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error('Email verification error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Email verification failed',
+    });
+  }
+};
+
+// @desc    Set password for verified email
+// @route   POST /api/auth/set-password
+// @access  Public
+export const setPassword = async (req: Request, res: Response) => {
+  try {
+    const { userId, password } = req.body;
+
+    if (!userId || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide userId and password',
+      });
+    }
+
+    const user = await setUserPassword(userId, password);
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Failed to set password',
+      });
+    }
+
+    // Generate token for automatic login
+    const token = signToken({ id: user.id });
+
+    res.json({
       success: true,
       token,
       user: {
@@ -71,31 +173,11 @@ export const register = async (req: Request, res: Response) => {
         role: user.role,
       },
     });
-    console.log('=== ✨ Registration Process Completed ===\n');
-  } catch (err: any) {
-    console.error('\n=== ❌ Registration Error ===');
-    console.error('Error details:', {
-      name: err.name,
-      message: err.message,
-      code: err.code,
-      details: err.details,
-      stack: err.stack
-    });
-    
-    // Send appropriate error response
-    if (err.code === '23505') { // Unique violation
-      console.log('❌ Duplicate email detected');
-      return res.status(400).json({
-        success: false,
-        message: 'Email already registered'
-      });
-    }
-    
-    console.error('❌ Sending 500 error response');
+  } catch (err) {
+    console.error('Set password error:', err);
     res.status(500).json({
       success: false,
-      message: 'Registration failed',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+      message: 'Failed to set password',
     });
   }
 };

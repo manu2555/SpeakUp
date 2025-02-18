@@ -3,6 +3,7 @@ import Layout from '../components/layout/Layout';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import SetPassword from '../pages/auth/SetPassword';
 import Dashboard from '../pages/Dashboard';
 import FeedbackForm from '../pages/FeedbackForm';
 import FeedbackHistory from '../pages/FeedbackHistory';
@@ -13,6 +14,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/verify-email/:token" element={<SetPassword />} />
       
       <Route
         path="/"

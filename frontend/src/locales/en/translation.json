@@ -1,0 +1,87 @@
+{
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "passwordMismatch": "Passwords do not match",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "checkEmail": "Check Your Email",
+    "verificationEmailSent": "We've sent a verification email to {{email}}",
+    "checkSpam": "If you don't see it, please check your spam folder",
+    "invalidToken": "Invalid or Expired Link",
+    "verificationLinkExpired": "The verification link has expired or is invalid. Please try registering again.",
+    "setPassword": "Set Your Password",
+    "welcomeSetPassword": "Welcome {{name}}! Please set your password to complete registration",
+    "completeRegistration": "Complete Registration",
+    "logout": "Logout"
+  },
+  "common": {
+    "dashboard": "Dashboard",
+    "total": "Total Feedbacks",
+    "filter": "Filter",
+    "rowsPerPage": "Rows per page",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "signedInAs": "Signed in as",
+    "language": "Change Language",
+    "lightMode": "Switch to Light Mode",
+    "darkMode": "Switch to Dark Mode",
+    "profile": "Profile",
+    "menu": {
+      "feedback": {
+        "submit": "Submit Feedback",
+        "history": "Feedback History",
+        "dashboard": "Dashboard"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "personalInfo": "Personal Information",
+    "update": "Update Profile",
+    "updateSuccess": "Profile updated successfully"
+  },
+  "feedback": {
+    "submitNew": "Submit New Feedback",
+    "submit": "Submit Feedback",
+    "list": "Feedback List",
+    "subject": "Subject",
+    "type": "Type",
+    "department": "Department",
+    "agency": "Agency",
+    "statusLabel": "Status",
+    "date": "Date",
+    "details": "Feedback Details",
+    "types": {
+      "COMPLAINT": "Complaint",
+      "SUGGESTION": "Suggestion",
+      "ENQUIRE": "Enquiry"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "IN_PROGRESS": "In Progress",
+      "RESOLVED": "Resolved"
+    }
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordMismatch": "Passwords do not match",
+    "minLength": "Must be at least {{length}} characters",
+    "serverError": "Server error occurred",
+    "somethingWentWrong": "Something went wrong",
+    "tryReloading": "Please try reloading the page",
+    "emailSendFailed": "Failed to send verification email. Please try again.",
+    "emailExists": "This email is already registered",
+    "invalidCredentials": "Invalid email or password"
+  }
+} 

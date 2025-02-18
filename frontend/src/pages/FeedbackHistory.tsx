@@ -339,45 +339,82 @@ const FeedbackHistory = () => {
 
         {/* Stats and Overview Section */}
         <Grid container spacing={3} sx={{ mb: 3, width: '100%' }}>
-          {/* Total Stats */}
-          <Grid item xs={12} sm={6} lg={3}>
-            <Card sx={{ 
-              bgcolor: '#BBE1FA',
-              height: '100%',
-              width: '100%'
-            }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <BarChartIcon sx={{ color: '#1B262C' }} />
-                  <Typography variant="h6" sx={{ color: '#1B262C' }}>
-                    {t('common.total')}
-                  </Typography>
-                  <Typography variant="h4" sx={{ ml: 'auto', color: '#1B262C', fontWeight: 600 }}>
-                    {stats.total}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Type Distribution */}
           {[
-            { type: 'COMPLAINT', count: stats.complaints, color: '#1B262C' },
-            { type: 'SUGGESTION', count: stats.suggestions, color: '#1B262C' },
-            { type: 'ENQUIRE', count: stats.enquiries, color: '#1B262C' }
+            { 
+              type: 'TOTAL',
+              count: stats.total,
+              color: '#0F4C75', 
+              bgColor: '#F0F9FF',
+              borderColor: '#3282B8',
+              icon: <BarChartIcon />
+            },
+            { 
+              type: 'COMPLAINT', 
+              count: stats.complaints, 
+              color: '#0F4C75', 
+              bgColor: '#F0F9FF',
+              borderColor: '#3282B8',
+              icon: <FeedbackIcon />
+            },
+            { 
+              type: 'SUGGESTION', 
+              count: stats.suggestions, 
+              color: '#0F4C75', 
+              bgColor: '#F0F9FF',
+              borderColor: '#3282B8',
+              icon: <FeedbackIcon />
+            },
+            { 
+              type: 'ENQUIRE', 
+              count: stats.enquiries, 
+              color: '#0F4C75', 
+              bgColor: '#F0F9FF',
+              borderColor: '#3282B8',
+              icon: <FeedbackIcon />
+            }
           ].map((item) => (
             <Grid item xs={12} sm={6} lg={3} key={item.type}>
               <Card sx={{ 
-                bgcolor: '#BBE1FA',
+                bgcolor: item.bgColor,
                 height: '100%',
-                width: '100%'
+                width: '100%',
+                boxShadow: 2,
+                borderLeft: 6,
+                borderColor: item.borderColor,
+                '&:hover': {
+                  boxShadow: 4,
+                  transform: 'translateY(-2px)',
+                  transition: 'all 0.2s ease-in-out'
+                }
               }}>
                 <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 500, color: item.color }}>
-                      {t(`feedback.types.${item.type}`)}
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1,
+                    p: 1
+                  }}>
+                    <Box sx={{ color: item.color }}>
+                      {item.icon}
+                    </Box>
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: item.color,
+                        flex: 1
+                      }}
+                    >
+                      {item.type === 'TOTAL' ? t('common.total') : t(`feedback.types.${item.type}`)}
                     </Typography>
-                    <Typography variant="h5" sx={{ ml: 'auto', fontWeight: 600 }}>
+                    <Typography 
+                      variant="h4" 
+                      sx={{ 
+                        fontWeight: 700,
+                        color: item.color,
+                        ml: 2
+                      }}
+                    >
                       {item.count}
                     </Typography>
                   </Box>

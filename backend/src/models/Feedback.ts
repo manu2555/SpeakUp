@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../config/database';
+import { supabaseAdmin } from '../lib/supabase';
 
 export interface Feedback {
   id: string;

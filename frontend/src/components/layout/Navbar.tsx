@@ -13,6 +13,7 @@ import {
   Tooltip,
   MenuItem,
   Divider,
+  ListItemText,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -125,7 +126,10 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem component={RouterLink} to="/feedback" onClick={handleCloseNavMenu}>
                 <AddIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography color="primary.main">{t('feedback.submit')}</Typography>
+                <ListItemText 
+                  primary={t('common.menu.feedback.submit')} 
+                  sx={{ opacity: Boolean(anchorElNav) ? 1 : 0 }} 
+                />
               </MenuItem>
             </Menu>
           </Box>
@@ -153,7 +157,7 @@ const Navbar = () => {
               startIcon={<AddIcon />}
               sx={{ color: 'text.primary' }}
             >
-              {t('feedback.submit')}
+              {t('common.menu.feedback.submit')}
             </Button>
           </Box>
 

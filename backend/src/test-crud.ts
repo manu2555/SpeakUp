@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './config/database';
+import { supabaseAdmin } from './lib/supabase';
 
 async function testCRUDOperations() {
   console.log('🔍 Starting CRUD operations test...\n');

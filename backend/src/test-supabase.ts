@@ -1,5 +1,5 @@
 import 'cross-fetch/polyfill';
-import { supabaseAdmin } from './config/database';
+import { supabaseAdmin } from './lib/supabase';
 
 async function testSupabaseConnection() {
   try {

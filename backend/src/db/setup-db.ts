@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '../config/database';
+import { supabaseAdmin } from '../lib/supabase';
 import fs from 'fs';
 import path from 'path';
 

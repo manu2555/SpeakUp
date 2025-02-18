@@ -1,162 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import enTranslation from '../locales/en/translation.json';
 
 const resources = {
   en: {
-    translation: {
-      common: {
-        dashboard: 'Dashboard',
-        submit: 'Submit',
-        cancel: 'Cancel',
-        save: 'Save',
-        delete: 'Delete',
-        edit: 'Edit',
-        loading: 'Loading...',
-        error: 'Error',
-        success: 'Success',
-        language: 'Language',
-        profile: 'Profile',
-        rowsPerPage: 'Rows per page',
-        page: 'Page',
-        of: 'of',
-        total: 'Total Feedbacks',
-        filter: 'Filter',
-        signedInAs: 'Signed in as',
-        lightMode: 'Switch to Light Mode',
-        darkMode: 'Switch to Dark Mode',
-        ENQUIRE: 'Enquire',
-      },
-      auth: {
-        login: 'Login',
-        register: 'Register',
-        logout: 'Logout',
-        email: 'Email',
-        password: 'Password',
-        confirmPassword: 'Confirm Password',
-        name: 'Name',
-        forgotPassword: 'Forgot Password?',
-        noAccount: "Don't have an account?",
-        haveAccount: 'Already have an account?',
-        passwordMismatch: 'Passwords do not match',
-      },
-      feedback: {
-        submitNew: 'Submit New Feedback',
-        type: 'Type',
-        types: {
-          COMPLAINT: 'Complaint',
-          SUGGESTION: 'Suggestion',
-          ENQUIRE: 'Enquire'
-        },
-        statusLabel: 'Status',
-        statusOverview: 'Status Overview',
-        typeDistribution: 'Feedback Distribution',
-        statuses: {
-          PENDING: 'Pending',
-          IN_PROGRESS: 'In Progress',
-          RESOLVED: 'Resolved',
-          REJECTED: 'Rejected'
-        },
-        department: 'Department',
-        agency: 'Agency',
-        subject: 'Subject',
-        description: 'Description',
-        submit: 'Submit Feedback',
-        history: 'Feedback History',
-        noFeedbacks: 'No feedback found',
-        details: 'Feedback Details',
-        date: 'Submission Date',
-        list: 'Feedback List'
-      },
-      departments: {
-        banks: 'Banks',
-        airlines: 'Airlines',
-        telecoms: 'Telecommunications',
-        healthcare: 'Healthcare',
-        government: 'Government',
-        finance: 'Finance',
-        entertainment: 'Entertainment',
-      },
-      agencies: {
-        banks: {
-          sbi: 'State Bank of India',
-          pnb: 'Punjab National Bank',
-          boi: 'Bank of India',
-          bob: 'Bank of Baroda',
-          hdfc: 'HDFC Bank',
-          icici: 'ICICI Bank',
-          axis: 'Axis Bank',
-          kotak: 'Kotak Mahindra Bank'
-        },
-        airlines: {
-          airindia: 'Air India',
-          vistara: 'Vistara',
-          indigo: 'IndiGo',
-          spicejet: 'SpiceJet',
-          airasia: 'Air Asia India',
-          akasa: 'Akasa Air'
-        },
-        telecoms: {
-          jio: 'Reliance Jio',
-          airtel: 'Bharti Airtel',
-          vi: 'Vodafone Idea',
-          bsnl: 'BSNL',
-          mtnl: 'MTNL'
-        },
-        healthcare: {
-          aiims: 'All India Institute of Medical Sciences',
-          apollo: 'Apollo Hospitals',
-          fortis: 'Fortis Healthcare',
-          max: 'Max Healthcare',
-          medanta: 'Medanta'
-        },
-        government: {
-          central: 'Central Government',
-          state: 'State Government',
-          municipal: 'Municipal Corporation',
-          panchayat: 'Panchayati Raj'
-        },
-        finance: {
-          sebi: 'SEBI',
-          rbi: 'Reserve Bank of India',
-          irdai: 'IRDAI',
-          pfrda: 'PFRDA',
-          nabard: 'NABARD'
-        },
-        entertainment: {
-          netflix: 'Netflix India',
-          amazon: 'Amazon Prime Video',
-          hotstar: 'Disney+ Hotstar',
-          sony: 'Sony LIV',
-          zee: 'ZEE5'
-        }
-      },
-      profile: {
-        title: 'Profile',
-        updateProfile: 'Update Profile',
-        changePassword: 'Change Password',
-        currentPassword: 'Current Password',
-        newPassword: 'New Password',
-        confirmPassword: 'Confirm New Password',
-        personalInfo: 'Personal Information',
-        update: 'Update Profile',
-        updateSuccess: 'Profile updated successfully',
-      },
-      dashboard: {
-        title: 'Dashboard',
-        welcome: 'Welcome',
-        noFeedbacks: 'No feedbacks found. Submit your first feedback!',
-      },
-      errors: {
-        required: 'This field is required',
-        invalidEmail: 'Invalid email address',
-        passwordMismatch: 'Passwords do not match',
-        minLength: 'Must be at least {{length}} characters',
-        serverError: 'Server error occurred',
-        somethingWentWrong: 'Something went wrong',
-        tryReloading: 'Please try reloading the page',
-        reload: 'Reload Page',
-      },
-    },
+    translation: enTranslation
   },
   hi: {
     translation: {
@@ -323,8 +171,14 @@ i18n
     lng: 'en',
     fallbackLng: 'en',
     interpolation: {
-      escapeValue: false,
+      escapeValue: false
     },
+    react: {
+      useSuspense: false,
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
+      nsMode: 'default'
+    }
   });
 
 export default i18n; 
