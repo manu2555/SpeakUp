@@ -103,7 +103,7 @@ const FeedbackForm = () => {
   const feedbackTypes = [
     { value: 'COMPLAINT', label: t('feedback.types.COMPLAINT') },
     { value: 'SUGGESTION', label: t('feedback.types.SUGGESTION') },
-    { value: 'COMPLIMENT', label: t('feedback.types.COMPLIMENT') },
+    { value: 'ENQUIRE', label: t('feedback.types.ENQUIRE') },
   ];
 
   const departments = [

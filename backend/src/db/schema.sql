@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.users (
 -- Create feedbacks table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.feedbacks (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    type VARCHAR(50) CHECK (type IN ('COMPLAINT', 'SUGGESTION', 'COMPLIMENT')),
+    type VARCHAR(50) CHECK (type IN ('COMPLAINT', 'SUGGESTION', 'ENQUIRE')),
     department VARCHAR(255) NOT NULL,
     agency VARCHAR(255) NOT NULL,
     subject VARCHAR(255) NOT NULL,

@@ -62,10 +62,10 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
           bgcolor: '#BBE1FA',
           color: '#0F4C75'
         };
-      case 'COMPLIMENT':
+      case 'ENQUIRE':
         return {
           bgcolor: '#BBE1FA',
-          color: '#3282B8'
+          color: '#1B262C'
         };
       default:
         return {
@@ -249,7 +249,7 @@ const FeedbackHistory = () => {
       resolved: feedbacks.filter((f: Feedback) => f.status === 'RESOLVED').length,
       complaints: feedbacks.filter((f: Feedback) => f.type === 'COMPLAINT').length,
       suggestions: feedbacks.filter((f: Feedback) => f.type === 'SUGGESTION').length,
-      compliments: feedbacks.filter((f: Feedback) => f.type === 'COMPLIMENT').length,
+      enquiries: feedbacks.filter((f: Feedback) => f.type === 'ENQUIRE').length,
     };
     return stats;
   };
@@ -347,7 +347,7 @@ const FeedbackHistory = () => {
           {[
             { type: 'COMPLAINT', count: stats.complaints, color: '#1B262C' },
             { type: 'SUGGESTION', count: stats.suggestions, color: '#1B262C' },
-            { type: 'COMPLIMENT', count: stats.compliments, color: '#1B262C' }
+            { type: 'ENQUIRE', count: stats.enquiries, color: '#1B262C' }
           ].map((item) => (
             <Grid item xs={12} sm={6} lg={3} key={item.type}>
               <Card sx={{ 
