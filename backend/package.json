@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node -r dotenv/config dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "npm install --production=true",
     "lint": "eslint . --ext .ts",
     "typeorm": "typeorm-ts-node-commonjs"
   },
