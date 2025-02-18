@@ -6,10 +6,9 @@
   "scripts": {
     "start": "node -r dotenv/config dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "npm install --production=false && tsc",
+    "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "postinstall": "npm run build"
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "keywords": [
     "feedback",
