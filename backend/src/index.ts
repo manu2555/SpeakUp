@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import routes from './routes';
 import { supabaseAdmin } from './config/database';
+import { env } from 'process';
 
 // Load environment variables
 dotenv.config();
@@ -61,7 +62,9 @@ async function testDbConnection() {
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: [
+   process.env.FRONTEND_URL || 'http://localhost:5174'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -154,4 +157,4 @@ process.on('unhandledRejection', (error) => {
   process.exit(1);
 });
 
-startServer(); 
+startServer();
