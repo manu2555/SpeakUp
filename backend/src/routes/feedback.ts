@@ -1,9 +1,9 @@
 import express from 'express';
 import {
-  createFeedback,
-  getFeedback,
-  getFeedbackById,
-  updateFeedbackStatus,
+  createFeedbackHandler,
+  getFeedbacksHandler,
+  getFeedbackByIdHandler,
+  updateFeedbackStatusHandler,
 } from '../controllers/feedback';
 import { protect, authorize } from '../middleware/auth';
 
@@ -13,12 +13,12 @@ router.use(protect); // Protect all routes
 
 router
   .route('/')
-  .post(createFeedback)
-  .get(getFeedback);
+  .post(createFeedbackHandler)
+  .get(getFeedbacksHandler);
 
 router
   .route('/:id')
-  .get(getFeedbackById)
-  .put(authorize('admin'), updateFeedbackStatus);
+  .get(getFeedbackByIdHandler)
+  .put(authorize('admin'), updateFeedbackStatusHandler);
 
-export default router; 
+export default router;

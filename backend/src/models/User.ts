@@ -1,7 +1,6 @@
-import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import { sequelize } from '../config/database';
+import { supabaseAdmin } from '../config/database';
 
 // Set up bcrypt to use node's crypto module
 bcrypt.setRandomFallback((len: number) => {
@@ -9,77 +8,131 @@ bcrypt.setRandomFallback((len: number) => {
   return Array.from(buf);
 });
 
-interface UserAttributes {
+export interface User {
   id: string;
   name: string;
   email: string;
   password: string;
   role: 'user' | 'admin';
-  createdAt?: Date;
-  updatedAt?: Date;
+  created_at?: string;
+  updated_at?: string;
 }
 
-interface UserCreationAttributes extends Omit<UserAttributes, 'id'> {}
+export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+  return bcrypt.compare(password, hashedPassword);
+};
 
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: string;
-  public name!: string;
-  public email!: string;
-  public password!: string;
-  public role!: 'user' | 'admin';
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+export const hashPassword = async (password: string): Promise<string> => {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(password, salt);
+};
 
-  public async comparePassword(candidatePassword: string): Promise<boolean> {
-    return bcrypt.compare(candidatePassword, this.password);
-  }
-}
-
-User.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true,
-      },
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM('user', 'admin'),
-      allowNull: false,
-      defaultValue: 'user',
-    },
-  },
-  {
-    sequelize,
-    modelName: 'User',
-    hooks: {
-      beforeCreate: async (user: User) => {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
-      },
-      beforeUpdate: async (user: User) => {
-        if (user.changed('password')) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
+export const createUser = async (userData: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User | null> => {
+  try {
+    console.log('\n=== 👤 Creating User ===');
+    console.log('Input data:', { 
+      name: userData.name, 
+      email: userData.email, 
+      role: userData.role,
+      password: '[REDACTED]' 
+    });
+    
+    // Hash password for database storage
+    console.log('🔒 Hashing password...');
+    const hashedPassword = await hashPassword(userData.password);
+    console.log('✅ Password hashed successfully');
+    
+    // Create the user profile in the users table
+    console.log('💾 Attempting to insert user into database...');
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .insert([
+        { 
+          name: userData.name,
+          email: userData.email,
+          password: hashedPassword,
+          role: userData.role || 'user'
         }
-      },
-    },
-  }
-);
+      ])
+      .select()
+      .single();
 
-export default User; 
+    if (error) {
+      console.error('❌ Database error during user creation:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+      throw error;
+    }
+
+    if (!data) {
+      console.error('❌ No data returned from user creation');
+      throw new Error('Failed to create user - no data returned');
+    }
+
+    console.log('✅ User created successfully:', {
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      role: data.role
+    });
+    console.log('=== ✨ User Creation Complete ===\n');
+    return data;
+  } catch (err) {
+    console.error('\n=== ❌ Create User Error ===');
+    console.error('Error details:', err);
+    if (err instanceof Error) {
+      console.error('Stack trace:', err.stack);
+    }
+    throw err;
+  }
+};
+
+export const findUserByEmail = async (email: string): Promise<User | null> => {
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (error) {
+    return null;
+  }
+
+  return data;
+};
+
+export const findUserById = async (id: string): Promise<User | null> => {
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    return null;
+  }
+
+  return data;
+};
+
+export const updateUser = async (id: string, updateData: Partial<User>): Promise<User | null> => {
+  if (updateData.password) {
+    updateData.password = await hashPassword(updateData.password);
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('users')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}; 

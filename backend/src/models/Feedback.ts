@@ -1,8 +1,6 @@
-import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../config/database';
-import User from './User';
+import { supabaseAdmin } from '../config/database';
 
-interface FeedbackAttributes {
+export interface Feedback {
   id: string;
   type: 'COMPLAINT' | 'SUGGESTION' | 'COMPLIMENT';
   department: string;
@@ -10,96 +8,122 @@ interface FeedbackAttributes {
   subject: string;
   description: string;
   status: 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-  userId: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  user_id: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-interface FeedbackCreationAttributes extends Omit<FeedbackAttributes, 'id'> {}
+export const createFeedback = async (feedbackData: Omit<Feedback, 'id' | 'created_at' | 'updated_at'>): Promise<Feedback | null> => {
+  try {
+    console.log('\n=== 📝 Creating Feedback ===');
+    console.log('Input data:', feedbackData);
 
-class Feedback extends Model<FeedbackAttributes, FeedbackCreationAttributes> implements FeedbackAttributes {
-  public id!: string;
-  public type!: 'COMPLAINT' | 'SUGGESTION' | 'COMPLIMENT';
-  public department!: string;
-  public agency!: string;
-  public subject!: string;
-  public description!: string;
-  public status!: 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-  public userId!: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-}
+    const { data, error } = await supabaseAdmin
+      .from('feedbacks')
+      .insert([{
+        ...feedbackData,
+        status: feedbackData.status || 'PENDING'
+      }])
+      .select()
+      .single();
 
-Feedback.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    type: {
-      type: DataTypes.ENUM('COMPLAINT', 'SUGGESTION', 'COMPLIMENT'),
-      allowNull: false,
-    },
-    department: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    agency: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    subject: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    status: {
-      type: DataTypes.ENUM('PENDING', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'),
-      allowNull: false,
-      defaultValue: 'PENDING',
-    },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: User,
-        key: 'id',
-      },
-    },
-  },
-  {
-    sequelize,
-    modelName: 'Feedback',
-    indexes: [
-      {
-        fields: ['userId'],
-      },
-      {
-        fields: ['department'],
-      },
-      {
-        fields: ['type'],
-      },
-      {
-        fields: ['status'],
-      },
-    ],
+    if (error) {
+      console.error('❌ Database error during feedback creation:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint
+      });
+      throw error;
+    }
+
+    if (!data) {
+      console.error('❌ No data returned from feedback creation');
+      throw new Error('Failed to create feedback - no data returned');
+    }
+
+    console.log('✅ Feedback created successfully:', data);
+    console.log('=== ✨ Feedback Creation Complete ===\n');
+    return data;
+  } catch (err) {
+    console.error('\n=== ❌ Create Feedback Error ===');
+    console.error('Error details:', err);
+    if (err instanceof Error) {
+      console.error('Stack trace:', err.stack);
+    }
+    throw err;
   }
-);
+};
 
-// Define associations
-Feedback.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'user',
-});
+export const getFeedbacks = async (userId?: string, filters: Partial<Feedback> = {}): Promise<Feedback[]> => {
+  let query = supabaseAdmin
+    .from('feedbacks')
+    .select(`
+      *,
+      users (
+        id,
+        name,
+        email
+      )
+    `);
 
-User.hasMany(Feedback, {
-  foreignKey: 'userId',
-  as: 'feedbacks',
-});
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
 
-export default Feedback; 
+  // Apply filters
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) {
+      query = query.eq(key, value);
+    }
+  });
+
+  const { data, error } = await query.order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+};
+
+export const getFeedbackById = async (id: string, userId?: string): Promise<Feedback | null> => {
+  let query = supabaseAdmin
+    .from('feedbacks')
+    .select(`
+      *,
+      users (
+        id,
+        name,
+        email
+      )
+    `)
+    .eq('id', id);
+
+  if (userId) {
+    query = query.eq('user_id', userId);
+  }
+
+  const { data, error } = await query.single();
+
+  if (error) {
+    return null;
+  }
+
+  return data;
+};
+
+export const updateFeedbackStatus = async (id: string, status: Feedback['status']): Promise<Feedback | null> => {
+  const { data, error } = await supabaseAdmin
+    .from('feedbacks')
+    .update({ status })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}; 
