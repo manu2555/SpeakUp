@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "npm install --production=false && tsc",
     "lint": "eslint . --ext .ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "postinstall": "npm run build"
@@ -22,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "@types/yup": "^0.32.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "cross-fetch": "^4.1.0",
@@ -42,7 +43,6 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.10.5",
     "@types/pg": "^8.10.9",
-    "@types/yup": "^0.32.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   },
