@@ -81,7 +81,7 @@ const Navbar = () => {
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+      <Toolbar disableGutters>
           {/* Desktop Logo */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 4 }}>
             <RouterLink to="/" style={{ textDecoration: 'none' }}>
@@ -198,7 +198,15 @@ const Navbar = () => {
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: '45px' }}
+                  sx={{ 
+                    mt: '45px',
+                    '& .MuiMenu-paper': {
+                      width: '250px', // Increase the width of the dropdown
+                      padding: '10px', // Add padding for better spacing
+                      borderRadius: '8px', // Add border radius for rounded corners
+                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add a subtle shadow
+                    },
+                  }}
                   id="menu-appbar"
                   anchorEl={anchorElUser}
                   anchorOrigin={{
@@ -213,7 +221,7 @@ const Navbar = () => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <Box sx={{ px: 2, py: 1 }}>
+                  <Box sx={{ px: 2, py: 1, bgcolor: 'background.default', borderRadius: '8px 8px 0 0' }}>
                     <Typography variant="subtitle2" color="text.secondary">
                       {t('common.signedInAs')}
                     </Typography>
@@ -221,11 +229,11 @@ const Navbar = () => {
                       {user.name}
                     </Typography>
                   </Box>
-                  <Divider />
-                  <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu}>
+                  <Divider sx={{ my: 1 }} />
+                  <MenuItem component={RouterLink} to="/profile" onClick={handleCloseUserMenu} sx={{ py: 1.5 }}>
                     {t('profile.title')}
                   </MenuItem>
-                  <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                  <MenuItem onClick={handleLogout} sx={{ color: 'error.main', py: 1.5 }}>
                     {t('auth.logout')}
                   </MenuItem>
                 </Menu>
@@ -237,8 +245,13 @@ const Navbar = () => {
                 to="/login"
                 sx={{ 
                   bgcolor: 'primary.main',
+                  color: 'white', // Ensure text color is white
                   '&:hover': {
                     bgcolor: 'primary.dark',
+                  },
+                  '&:active': {
+                    bgcolor: 'primary.dark',
+                    color: 'white', // Ensure text color remains white when clicked
                   },
                 }}
               >
