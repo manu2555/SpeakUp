@@ -7,7 +7,7 @@ export interface User {
 
 export interface Feedback {
   id: string;
-  type: 'COMPLAINT' | 'SUGGESTION' | 'COMPLIMENT';
+  type: 'COMPLAINT' | 'SUGGESTION' | 'ENQUIRE';
   department: string;
   agency: string;
   subject: string;

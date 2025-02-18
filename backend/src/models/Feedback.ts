@@ -2,7 +2,7 @@ import { supabaseAdmin } from '../config/database';
 
 export interface Feedback {
   id: string;
-  type: 'COMPLAINT' | 'SUGGESTION' | 'COMPLIMENT';
+  type: 'COMPLAINT' | 'SUGGESTION' | 'ENQUIRE';
   department: string;
   agency: string;
   subject: string;

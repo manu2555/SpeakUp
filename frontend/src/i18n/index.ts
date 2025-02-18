@@ -24,6 +24,7 @@ const resources = {
         signedInAs: 'Signed in as',
         lightMode: 'Switch to Light Mode',
         darkMode: 'Switch to Dark Mode',
+        ENQUIRE: 'Enquire',
       },
       auth: {
         login: 'Login',
@@ -44,7 +45,7 @@ const resources = {
         types: {
           COMPLAINT: 'Complaint',
           SUGGESTION: 'Suggestion',
-          COMPLIMENT: 'Compliment'
+          ENQUIRE: 'Enquire'
         },
         statusLabel: 'Status',
         statusOverview: 'Status Overview',
@@ -178,6 +179,7 @@ const resources = {
         signedInAs: 'इस रूप में साइन इन',
         lightMode: 'लाइट मोड में बदलें',
         darkMode: 'डार्क मोड में बदलें',
+        ENQUIRE: 'पूछताछ',
       },
       auth: {
         login: 'लॉग इन',
@@ -198,7 +200,7 @@ const resources = {
         types: {
           COMPLAINT: 'शिकायत',
           SUGGESTION: 'सुझाव',
-          COMPLIMENT: 'प्रशंसा'
+          ENQUIRE: 'पूछताछ'
         },
         statusLabel: 'स्थिति',
         statusOverview: 'स्थिति अवलोकन',
