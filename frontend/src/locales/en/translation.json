@@ -51,7 +51,7 @@
     "cancel": "Cancel",
     "submit": "Submit",
     "signedInAs": "Signed in as",
-    "language": "Change Language",
+    "language": "Language",
     "lightMode": "Switch to Light Mode",
     "darkMode": "Switch to Dark Mode",
     "profile": "Profile",
@@ -67,7 +67,17 @@
     "email": "Share via Email",
     "share": "Share",
     "send": "Send",
-    "actions": "Actions"
+    "actions": "Actions",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "page": "Page",
+    "of": "of",
+    "clear": "Clear Filters",
+    "all": "All",
+    "filterTitle": "Filter Feedbacks",
+    "applyFilter": "Apply Filter"
   },
   "profile": {
     "title": "Profile",
@@ -89,7 +99,7 @@
     "department": "Department",
     "agency": "Agency",
     "statusLabel": "Status",
-    "date": "Date",
+    "date": "Submission Date",
     "details": "Feedback Details",
     "description": "Description",
     "selectType": "Select Type",
@@ -103,7 +113,8 @@
     "statuses": {
       "PENDING": "Pending",
       "IN_PROGRESS": "In Progress",
-      "RESOLVED": "Resolved"
+      "RESOLVED": "Resolved",
+      "REJECTED": "Rejected"
     },
     "departments": {
       "banks": "Banks",
@@ -182,9 +193,9 @@
     "invalidFile": "Invalid file type or size. Only PDF, JPEG, PNG files up to 5MB are allowed",
     "documents": "Uploaded Documents",
     "document": "Document",
-    "preview": "Preview Image",
+    "preview": "Preview",
     "viewDocuments": "View Documents",
-    "uploadDocuments": "Upload Relevant Documents",
+    "uploadDocuments": "Upload Documents",
     "chooseFiles": "Choose Files",
     "deleteConfirmTitle": "Delete Feedback",
     "deleteConfirmMessage": "Are you sure you want to delete this feedback? This action cannot be undone.",
@@ -198,7 +209,10 @@
     "emailSignature": "Best regards,\nSpeakUp Team",
     "editFeedback": "Edit Feedback",
     "updateSuccess": "Feedback updated successfully",
-    "updateError": "Failed to update feedback"
+    "updateError": "Failed to update feedback",
+    "statusOverview": "Status Overview",
+    "typeDistribution": "Feedback Distribution",
+    "noFeedbacks": "No feedbacks found"
   },
   "errors": {
     "required": "This field is required",

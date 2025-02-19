@@ -270,4 +270,30 @@ export const getMe = async (req: Request, res: Response) => {
       message: 'Server Error',
     });
   }
+};
+
+// @desc    Get total user count
+// @route   GET /api/auth/total-users
+// @access  Public
+export const getTotalUsers = async (req: Request, res: Response) => {
+  try {
+    const { count, error } = await supabaseAdmin
+      .from('users')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) {
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      count: count || 0
+    });
+  } catch (err) {
+    console.error('Error getting total users:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get total users count'
+    });
+  }
 }; 

@@ -413,85 +413,87 @@ const Register = () => {
                   gutterBottom
                   sx={{ fontWeight: 600 }}
                 >
-                  {t('auth.register')}
-                </Typography>
+          {t('auth.register')}
+        </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {t('auth.joinCommunity')}
                 </Typography>
               </Box>
-              
+        
               <Collapse in={!!error}>
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
               </Collapse>
 
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  fullWidth
-                  label={t('auth.name')}
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  margin="normal"
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label={t('auth.name')}
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            margin="normal"
                   error={!!formErrors.name}
                   helperText={formErrors.name}
                   disabled={isLoading}
-                />
-                <TextField
-                  fullWidth
-                  label={t('auth.email')}
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  margin="normal"
+          />
+          <TextField
+            fullWidth
+            label={t('auth.email')}
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            margin="normal"
                   error={!!formErrors.email}
                   helperText={formErrors.email}
                   disabled={isLoading}
-                />
+          />
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  size="large"
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
                   sx={{ 
                     mt: 3, 
                     mb: 2,
                     height: 48,
                   }}
                   disabled={isLoading}
-                >
-                  {isLoading ? <CircularProgress size={24} /> : t('auth.register')}
-                </Button>
-              </form>
+          >
+            {isLoading ? <CircularProgress size={24} /> : t('auth.register')}
+          </Button>
+        </form>
 
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="body2">
-                  {t('auth.haveAccount')}{' '}
-                  <Link 
-                    component={RouterLink} 
-                    to="/login" 
+          <Typography variant="body2">
+            {t('auth.haveAccount')}{' '}
+                  <Button
+                    component={RouterLink}
+                    to="/login"
                     color="primary"
+                    variant="text"
                     sx={{ 
                       fontWeight: 500,
-                      textDecoration: 'none',
+                      textTransform: 'none',
                       '&:hover': {
+                        backgroundColor: 'transparent',
                         textDecoration: 'underline',
                       },
                     }}
                   >
-                    {t('auth.login')}
-                  </Link>
-                </Typography>
-              </Box>
-            </Paper>
+              {t('auth.login')}
+                  </Button>
+          </Typography>
+        </Box>
+      </Paper>
           </Grid>
         </Grid>
-      </Container>
+    </Container>
     </Box>
   );
 };

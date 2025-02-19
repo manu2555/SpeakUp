@@ -37,7 +37,12 @@ import {
   Snackbar,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  FormControl,
+  InputLabel,
+  Select,
+  SelectChangeEvent,
+  Popover,
 } from '@mui/material';
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
@@ -546,6 +551,17 @@ ${t('feedback.emailSignature')}
   );
 };
 
+const departments = [
+  { value: 'banks', label: 'feedback.departments.banks' },
+  { value: 'airlines', label: 'feedback.departments.airlines' },
+  { value: 'telecoms', label: 'feedback.departments.telecoms' },
+  { value: 'healthcare', label: 'feedback.departments.healthcare' },
+  { value: 'government', label: 'feedback.departments.government' },
+  { value: 'finance', label: 'feedback.departments.finance' },
+  { value: 'entertainment', label: 'feedback.departments.entertainment' },
+  { value: 'railways', label: 'feedback.departments.railways' },
+];
+
 const FeedbackHistory = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -555,6 +571,12 @@ const FeedbackHistory = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const [filters, setFilters] = useState({
+    type: '',
+    department: '',
+    status: '',
+  });
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     dispatch(getFeedbacks());
@@ -581,6 +603,37 @@ const FeedbackHistory = () => {
     };
     return stats;
   };
+
+  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleFilterChange = (event: SelectChangeEvent) => {
+    const { name, value } = event.target;
+    setFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      type: '',
+      department: '',
+      status: '',
+    });
+  };
+
+  const filteredFeedbacks = feedbacks.filter((feedback: Feedback) => {
+    if (filters.type && feedback.type !== filters.type) return false;
+    if (filters.department && feedback.department !== filters.department) return false;
+    if (filters.status && feedback.status !== filters.status) return false;
+    return true;
+  });
 
   if (isLoading) {
     return (
@@ -778,11 +831,41 @@ const FeedbackHistory = () => {
             <Typography variant="h6" color="primary.main">
               {t('feedback.list')}
             </Typography>
-            <Tooltip title={t('common.filter')}>
-              <IconButton color="primary" size="small">
-                <FilterListIcon />
-              </IconButton>
-            </Tooltip>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Button
+                startIcon={<FilterListIcon />}
+                onClick={handleFilterClick}
+                color="primary"
+                variant={Object.values(filters).some(v => v) ? "contained" : "outlined"}
+                size="small"
+                sx={{
+                  borderRadius: 2,
+                  px: 2,
+                  '& .MuiButton-startIcon': {
+                    mr: 0.5,
+                  },
+                }}
+              >
+                {t('common.filter')}
+                {Object.values(filters).some(v => v) && (
+                  <Box
+                    component="span"
+                    sx={{
+                      ml: 1,
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 10,
+                      bgcolor: 'primary.dark',
+                      color: 'white',
+                      fontSize: '0.75rem',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {Object.values(filters).filter(v => v).length}
+                  </Box>
+                )}
+              </Button>
+            </Box>
           </Box>
           <TableContainer sx={{ maxHeight: 'calc(100vh - 500px)', width: '100%' }}>
             <Table stickyHeader size="small" sx={{ width: '100%' }}>
@@ -801,8 +884,8 @@ const FeedbackHistory = () => {
               </TableHead>
               <TableBody>
                 {(rowsPerPage > 0
-                  ? feedbacks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  : feedbacks
+                  ? filteredFeedbacks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  : filteredFeedbacks
                 ).map((feedback: Feedback, index: number) => (
                   <Row 
                     key={feedback.id} 
@@ -816,7 +899,7 @@ const FeedbackHistory = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={feedbacks.length}
+            count={filteredFeedbacks.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -826,6 +909,120 @@ const FeedbackHistory = () => {
           />
         </Paper>
       </Container>
+
+      {/* Filter Popover */}
+      <Popover
+        open={Boolean(filterAnchorEl)}
+        anchorEl={filterAnchorEl}
+        onClose={handleFilterClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        PaperProps={{
+          elevation: 3,
+          sx: {
+            borderRadius: 2,
+            width: 320,
+          }
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography 
+            variant="h6" 
+            gutterBottom
+            sx={{ 
+              mb: 3,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              color: 'primary.main',
+            }}
+          >
+            <FilterListIcon fontSize="small" />
+            {t('common.filterTitle')}
+          </Typography>
+
+          <Stack spacing={2.5}>
+            <FormControl fullWidth size="small">
+              <InputLabel>{t('feedback.type')}</InputLabel>
+              <Select
+                name="type"
+                value={filters.type}
+                label={t('feedback.type')}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                <MenuItem value="COMPLAINT">{t('feedback.types.COMPLAINT')}</MenuItem>
+                <MenuItem value="SUGGESTION">{t('feedback.types.SUGGESTION')}</MenuItem>
+                <MenuItem value="ENQUIRE">{t('feedback.types.ENQUIRE')}</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth size="small">
+              <InputLabel>{t('feedback.department')}</InputLabel>
+              <Select
+                name="department"
+                value={filters.department}
+                label={t('feedback.department')}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                {departments.map((dept) => (
+                  <MenuItem key={dept.value} value={dept.value}>
+                    {t(dept.label)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth size="small">
+              <InputLabel>{t('feedback.statusLabel')}</InputLabel>
+              <Select
+                name="status"
+                value={filters.status}
+                label={t('feedback.statusLabel')}
+                onChange={handleFilterChange}
+              >
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                <MenuItem value="PENDING">{t('feedback.statuses.PENDING')}</MenuItem>
+                <MenuItem value="IN_PROGRESS">{t('feedback.statuses.IN_PROGRESS')}</MenuItem>
+                <MenuItem value="RESOLVED">{t('feedback.statuses.RESOLVED')}</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
+          <Box sx={{ 
+            mt: 3, 
+            pt: 2,
+            display: 'flex',
+            gap: 2,
+            borderTop: 1,
+            borderColor: 'divider'
+          }}>
+            <Button
+              fullWidth
+              size="small"
+              onClick={clearFilters}
+              color="inherit"
+            >
+              {t('common.clear')}
+            </Button>
+            <Button
+              fullWidth
+              variant="contained"
+              size="small"
+              onClick={handleFilterClose}
+            >
+              {t('common.applyFilter')}
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
     </Box>
   );
 };

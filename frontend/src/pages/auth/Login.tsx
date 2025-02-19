@@ -353,20 +353,22 @@ const Login = () => {
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="body2">
                   {t('auth.noAccount')}{' '}
-                  <Link 
-                    component={RouterLink} 
-                    to="/register" 
+                  <Button
+                    component={RouterLink}
+                    to="/register"
                     color="primary"
+                    variant="text"
                     sx={{ 
                       fontWeight: 500,
-                      textDecoration: 'none',
+                      textTransform: 'none',
                       '&:hover': {
+                        backgroundColor: 'transparent',
                         textDecoration: 'underline',
                       },
                     }}
                   >
                     {t('auth.register')}
-                  </Link>
+                  </Button>
                 </Typography>
               </Box>
             </Paper>

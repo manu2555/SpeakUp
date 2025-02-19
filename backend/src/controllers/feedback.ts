@@ -353,4 +353,69 @@ export const updateFeedbackHandler = async (req: Request, res: Response) => {
       details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
+};
+
+// @desc    Delete feedback
+// @route   DELETE /api/feedback/:id
+// @access  Private
+export const deleteFeedbackHandler = async (req: Request, res: Response) => {
+  try {
+    console.log('\n=== 🗑️ Starting Feedback Deletion ===');
+    
+    const { id } = req.params;
+    const userId = (req as any).user.id;
+
+    // Get existing feedback to check ownership and get file paths
+    const existingFeedback = await getFeedbackById(id, userId);
+    
+    if (!existingFeedback) {
+      return res.status(404).json({
+        success: false,
+        message: 'Feedback not found',
+      });
+    }
+
+    // Delete from database
+    const { error } = await supabaseAdmin
+      .from('feedbacks')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    // Delete associated files if they exist
+    if (existingFeedback.file_paths && existingFeedback.file_paths.length > 0) {
+      console.log('Deleting associated files:', existingFeedback.file_paths);
+      existingFeedback.file_paths.forEach(filePath => {
+        const fullPath = path.join(uploadsDir, filePath);
+        try {
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+            console.log(`Deleted file: ${fullPath}`);
+          }
+        } catch (err) {
+          console.error(`Failed to delete file ${fullPath}:`, err);
+        }
+      });
+    }
+
+    console.log('✅ Feedback deletion successful');
+    console.log('=== ✨ Feedback Deletion Complete ===\n');
+
+    res.json({
+      success: true,
+      message: 'Feedback deleted successfully',
+    });
+  } catch (err: any) {
+    console.error('\n=== ❌ Feedback Deletion Error ===');
+    console.error('Error details:', err);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete feedback',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
 }; 
