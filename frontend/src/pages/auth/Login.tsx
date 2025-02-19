@@ -315,8 +315,8 @@ const Login = () => {
                     mb: 2,
                   }}
                 >
-                  {t('auth.login')}
-                </Typography>
+          {t('auth.login')}
+        </Typography>
                 <Typography 
                   variant="body1" 
                   color="text.secondary"
