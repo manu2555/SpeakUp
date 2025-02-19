@@ -184,7 +184,10 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
   };
 
   const getFileUrl = (fileName: string) => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8888';
+    // Use the environment-specific API URL
+    const apiUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://speakup-backend.onrender.com'
+      : import.meta.env.VITE_API_URL || 'http://localhost:8888';
     return `${apiUrl}/uploads/${fileName}`;
   };
 

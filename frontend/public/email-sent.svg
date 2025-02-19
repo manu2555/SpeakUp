@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="gradient">
+            <stop stop-color="#40E0D0" offset="0%"/>
+            <stop stop-color="#20B2AA" offset="100%"/>
+        </linearGradient>
+    </defs>
+    <g stroke="none" fill="none">
+        <!-- Envelope -->
+        <path d="M20,50 L180,50 L180,150 L20,150 L20,50 Z" 
+              fill="#FFFFFF" 
+              stroke="url(#gradient)" 
+              stroke-width="4"/>
+        
+        <!-- Envelope Flap -->
+        <path d="M20,50 L100,100 L180,50" 
+              stroke="url(#gradient)" 
+              stroke-width="4" 
+              fill="none"/>
+        
+        <!-- Paper -->
+        <rect x="40" y="70" width="120" height="60" 
+              fill="#F5F5F5" 
+              rx="4"/>
+        
+        <!-- Lines on Paper -->
+        <line x1="50" y1="85" x2="150" y2="85" 
+              stroke="#E0E0E0" 
+              stroke-width="2"/>
+        <line x1="50" y1="100" x2="150" y2="100" 
+              stroke="#E0E0E0" 
+              stroke-width="2"/>
+        <line x1="50" y1="115" x2="120" y2="115" 
+              stroke="#E0E0E0" 
+              stroke-width="2"/>
+        
+        <!-- Checkmark -->
+        <circle cx="160" cy="40" r="20" 
+                fill="#4CAF50"/>
+        <path d="M150,40 L158,48 L170,32" 
+              stroke="#FFFFFF" 
+              stroke-width="3" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"/>
+    </g>
+</svg> 

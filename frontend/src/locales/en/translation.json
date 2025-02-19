@@ -11,7 +11,7 @@
     "noAccount": "Don't have an account?",
     "checkEmail": "Check Your Email",
     "verificationEmailSent": "We've sent a verification email to {{email}}",
-    "checkSpam": "If you don't see it, please check your spam folder",
+    "checkSpam": "If you don't see the email in your inbox, please check your spam folder.",
     "invalidToken": "Invalid or Expired Link",
     "verificationLinkExpired": "The verification link has expired or is invalid. Please try registering again.",
     "setPassword": "Set Your Password",
@@ -41,7 +41,9 @@
     "trust3": "Trusted Platform",
     "benefit1": "Secure Platform",
     "benefit2": "Quick Response",
-    "benefit3": "Global Reach"
+    "benefit3": "Global Reach",
+    "nextSteps": "What's Next?",
+    "emailNote": "The verification link will expire in 24 hours. Make sure to click it before then to complete your registration."
   },
   "common": {
     "dashboard": "Dashboard",

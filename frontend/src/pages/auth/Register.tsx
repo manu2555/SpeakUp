@@ -24,6 +24,7 @@ import {
   VerifiedUser as VerifiedUserIcon,
   Diversity3 as Diversity3Icon,
   Handshake as HandshakeIcon,
+  Info as InfoIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -153,66 +154,126 @@ const Register = () => {
           alignItems: 'center',
           background: `linear-gradient(135deg, ${theme.palette.primary.light}20 0%, ${theme.palette.primary.dark}10 100%)`,
           overflow: 'hidden',
+          px: { xs: 2, sm: 4, md: 6, lg: 8 },
         }}
       >
-        <Container maxWidth="sm">
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 4,
-              textAlign: 'center',
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              backdropFilter: 'blur(10px)',
-              position: 'relative',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                opacity: 0.1,
-              },
-            }}
-          >
-            <Box sx={{ mb: 3 }}>
-              <Logo size="large" />
-            </Box>
-            <Typography 
-              variant="h4" 
-              component="h1" 
-              gutterBottom
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            {/* Left side - Success Content */}
+            <Grid item xs={12} md={7} lg={8}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                alignItems: { xs: 'center', md: 'flex-start' },
+                textAlign: { xs: 'center', md: 'left' },
+                pr: { md: 8 },
+              }}>
+                <Typography 
+                  variant="h2" 
+                  gutterBottom
+                  sx={{ 
+                    fontWeight: 800,
+                    fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' },
+                    lineHeight: 1.2,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    mb: 3,
+                  }}
+                >
+                  {t('auth.checkEmail')}
+                </Typography>
+                <Typography 
+                  variant="h5" 
+                  color="text.secondary"
+                  sx={{ 
+                    maxWidth: '600px',
+                    mb: 4,
+                    fontSize: { xs: '1.1rem', md: '1.3rem' },
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {t('auth.verificationEmailSent', { email: formData.email })}
+                </Typography>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    bgcolor: 'background.paper',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    maxWidth: '500px',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <InfoIcon color="primary" />
+                    <Typography variant="subtitle1" color="primary.main" sx={{ fontWeight: 600 }}>
+                      {t('auth.nextSteps')}
+                    </Typography>
+                  </Box>
+                  <Typography 
+                    variant="body1" 
+                    color="text.secondary"
+                    sx={{ mb: 2 }}
+                  >
+                    {t('auth.checkSpam')}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('auth.emailNote')}
+                  </Typography>
+                </Paper>
+              </Box>
+            </Grid>
+
+            {/* Right side - Success Animation */}
+            <Grid 
+              item 
+              xs={12} 
+              md={5} 
+              lg={4} 
               sx={{ 
-                fontWeight: 700,
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                display: { xs: 'none', md: 'flex' },
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              {t('auth.checkEmail')}
-            </Typography>
-            <Typography 
-              variant="body1" 
-              paragraph
-              sx={{ mb: 2 }}
-            >
-              {t('auth.verificationEmailSent', { email: formData.email })}
-            </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary"
-              sx={{ 
-                mt: 2,
-                fontSize: '0.875rem'
-              }}
-            >
-              {t('auth.checkSpam')}
-            </Typography>
-          </Paper>
+              <Paper 
+                elevation={3} 
+                sx={{ 
+                  p: 4,
+                  width: '100%',
+                  maxWidth: 480,
+                  borderRadius: 2,
+                  bgcolor: 'background.paper',
+                  textAlign: 'center',
+                }}
+              >
+                <Box sx={{ mb: 3 }}>
+                  <Logo size="large" />
+                </Box>
+                <Box 
+                  sx={{ 
+                    position: 'relative',
+                    width: '200px',
+                    height: '200px',
+                    margin: '0 auto',
+                    animation: 'float 3s ease-in-out infinite',
+                    '@keyframes float': {
+                      '0%, 100%': { transform: 'translateY(0)' },
+                      '50%': { transform: 'translateY(-20px)' },
+                    },
+                  }}
+                >
+                  <img 
+                    src="/email-sent.svg" 
+                    alt="Email Sent" 
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  />
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
     );
