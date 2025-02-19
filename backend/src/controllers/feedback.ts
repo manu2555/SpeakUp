@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { createFeedback, getFeedbacks, getFeedbackById, updateFeedbackStatus, deleteFeedback } from '../models/Feedback';
+import { createFeedback, getFeedbacks, getFeedbackById, updateFeedbackStatus } from '../models/Feedback';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { supabaseAdmin } from '../lib/supabase';
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, '../../uploads');
@@ -259,61 +260,96 @@ export const updateFeedbackStatusHandler = async (req: Request, res: Response) =
   }
 };
 
-// @desc    Delete feedback
-// @route   DELETE /api/feedback/:id
+// @desc    Update feedback
+// @route   PUT /api/feedback/:id
 // @access  Private
-export const deleteFeedbackHandler = async (req: Request, res: Response) => {
+export const updateFeedbackHandler = async (req: Request, res: Response) => {
   try {
-    console.log('\n=== 🗑️ Starting Feedback Deletion ===');
+    console.log('\n=== 🔄 Starting Feedback Update ===');
+    console.log('📝 Request body:', req.body);
+    console.log('📎 Files:', req.files);
+    
     const { id } = req.params;
+    const { type, department, agency, subject, description } = req.body;
     const userId = (req as any).user.id;
-    const userRole = (req as any).user.role;
 
-    // Check if feedback exists and belongs to user
-    const feedback = await getFeedbackById(id, userRole === 'user' ? userId : undefined);
-
-    if (!feedback) {
-      console.log('❌ Feedback not found or unauthorized');
+    // Get existing feedback
+    const existingFeedback = await getFeedbackById(id, userId);
+    
+    if (!existingFeedback) {
       return res.status(404).json({
         success: false,
-        message: 'Feedback not found or unauthorized',
+        message: 'Feedback not found',
       });
     }
 
-    // Delete associated files if they exist
-    if (feedback.file_paths && feedback.file_paths.length > 0) {
-      console.log('🗑️ Deleting associated files...');
-      feedback.file_paths.forEach(filePath => {
-        const fullPath = path.join(__dirname, '../../uploads', filePath);
+    // Handle file uploads
+    let filePaths: string[] = [];
+    if (req.files && Array.isArray(req.files) && (req.files as Express.Multer.File[]).length > 0) {
+      console.log(`Processing ${(req.files as Express.Multer.File[]).length} new uploaded files`);
+      filePaths = (req.files as Express.Multer.File[]).map(file => file.filename);
+    }
+
+    // Keep existing files that weren't removed
+    const existingFiles = req.body.existing_files ? JSON.parse(req.body.existing_files) : [];
+    filePaths = [...existingFiles, ...filePaths];
+
+    // Update feedback data
+    const feedbackData = {
+      type: type || existingFeedback.type,
+      department: department || existingFeedback.department,
+      agency: agency || existingFeedback.agency,
+      subject: subject || existingFeedback.subject,
+      description: description || existingFeedback.description,
+      user_id: userId,
+      status: existingFeedback.status,
+      file_paths: filePaths
+    };
+
+    const { data, error } = await supabaseAdmin
+      .from('feedbacks')
+      .update(feedbackData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error('Failed to update feedback');
+    }
+
+    console.log('✅ Feedback update successful:', {
+      id: data.id,
+      file_paths: data.file_paths
+    });
+
+    res.json({
+      success: true,
+      data: data,
+    });
+    console.log('=== ✨ Feedback Update Process Completed ===\n');
+  } catch (err: any) {
+    console.error('\n=== ❌ Feedback Update Error ===');
+    console.error('Error details:', err);
+    
+    // Clean up any newly uploaded files if update fails
+    if (req.files && Array.isArray(req.files)) {
+      (req.files as Express.Multer.File[]).forEach(file => {
         try {
-          fs.unlinkSync(fullPath);
-          console.log(`✅ Deleted file: ${filePath}`);
-        } catch (err) {
-          console.error(`❌ Failed to delete file ${filePath}:`, err);
+          fs.unlinkSync(file.path);
+          console.log(`Cleaned up file: ${file.path}`);
+        } catch (cleanupErr) {
+          console.error(`Failed to clean up file ${file.path}:`, cleanupErr);
         }
       });
     }
 
-    // Delete the feedback
-    const deleted = await deleteFeedback(id);
-
-    if (!deleted) {
-      throw new Error('Failed to delete feedback');
-    }
-
-    console.log('✅ Feedback deletion successful');
-    res.json({
-      success: true,
-      message: 'Feedback deleted successfully',
-    });
-    console.log('=== ✨ Feedback Deletion Process Completed ===\n');
-  } catch (err: any) {
-    console.error('\n=== ❌ Feedback Deletion Error ===');
-    console.error('Error details:', err);
-    
     res.status(500).json({
       success: false,
-      message: 'Failed to delete feedback',
+      message: 'Failed to update feedback',
       details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }

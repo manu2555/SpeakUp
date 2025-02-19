@@ -136,46 +136,4 @@ export const updateFeedbackStatus = async (id: string, status: Feedback['status'
   }
 
   return data;
-};
-
-export const deleteFeedback = async (id: string): Promise<boolean> => {
-  try {
-    console.log('\n=== 🗑️ Deleting Feedback ===');
-    console.log('Feedback ID:', id);
-
-    const { data, error } = await supabaseAdmin
-      .from('feedbacks')
-      .delete()
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('❌ Database error during feedback deletion:', {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-        hint: error.hint
-      });
-      throw error;
-    }
-
-    if (!data) {
-      console.error('❌ No data returned from feedback deletion');
-      return false;
-    }
-
-    console.log('✅ Feedback deleted successfully:', {
-      id: data.id
-    });
-    console.log('=== ✨ Feedback Deletion Complete ===\n');
-    return true;
-  } catch (err) {
-    console.error('\n=== ❌ Delete Feedback Error ===');
-    console.error('Error details:', err);
-    if (err instanceof Error) {
-      console.error('Stack trace:', err.stack);
-    }
-    throw err;
-  }
 }; 

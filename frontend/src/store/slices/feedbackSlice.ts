@@ -46,6 +46,34 @@ export const createFeedback = createAsyncThunk(
   }
 );
 
+export const updateFeedback = createAsyncThunk(
+  'feedback/updateFeedback',
+  async (data: { id: string; formData: FormData }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/feedback/${data.id}`, data.formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update feedback');
+    }
+  }
+);
+
+export const deleteFeedback = createAsyncThunk(
+  'feedback/deleteFeedback',
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await api.delete(`/feedback/${id}`);
+      return id;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete feedback');
+    }
+  }
+);
+
 const feedbackSlice = createSlice({
   name: 'feedback',
   initialState,
@@ -81,6 +109,36 @@ const feedbackSlice = createSlice({
         state.error = null;
       })
       .addCase(createFeedback.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Update Feedback
+      .addCase(updateFeedback.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateFeedback.fulfilled, (state, action: PayloadAction<Feedback>) => {
+        state.isLoading = false;
+        state.feedbacks = state.feedbacks.map(feedback =>
+          feedback.id === action.payload.id ? action.payload : feedback
+        );
+        state.error = null;
+      })
+      .addCase(updateFeedback.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Delete Feedback
+      .addCase(deleteFeedback.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteFeedback.fulfilled, (state, action: PayloadAction<string>) => {
+        state.isLoading = false;
+        state.feedbacks = state.feedbacks.filter(feedback => feedback.id !== action.payload);
+        state.error = null;
+      })
+      .addCase(deleteFeedback.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

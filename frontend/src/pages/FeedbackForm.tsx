@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -24,6 +24,9 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Snackbar,
+  ListItemIcon,
+  Link,
 } from '@mui/material';
 import {
   CloudUpload as CloudUploadIcon,
@@ -34,7 +37,7 @@ import {
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { createFeedback } from '../store/slices/feedbackSlice';
+import { createFeedback, updateFeedback } from '../store/slices/feedbackSlice';
 import { getAgencies } from '../store/slices/agencySlice';
 
 interface FeedbackFormData {
@@ -53,6 +56,10 @@ interface Agency {
 const FeedbackForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
+  const isEditMode = !!id;
+  const editFeedback = location.state?.feedback;
   const dispatch = useAppDispatch();
   const { isLoading: feedbackLoading, error } = useAppSelector((state) => state.feedback);
   const { agencies, isLoading: agenciesLoading } = useAppSelector((state) => state.agencies);
@@ -68,7 +75,32 @@ const FeedbackForm = () => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [existingFiles, setExistingFiles] = useState<string[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  useEffect(() => {
+    if (isEditMode && editFeedback) {
+      setFormData({
+        type: editFeedback.type,
+        department: editFeedback.department,
+        agency: editFeedback.agency,
+        subject: editFeedback.subject,
+        description: editFeedback.description,
+      });
+
+      if (editFeedback.file_paths) {
+        setExistingFiles(editFeedback.file_paths);
+      }
+    }
+  }, [isEditMode, editFeedback]);
+
+  useEffect(() => {
+    if (formData.department) {
+      dispatch(getAgencies(formData.department));
+    }
+  }, [formData.department, dispatch]);
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -165,21 +197,46 @@ const FeedbackForm = () => {
     formDataWithFiles.append('subject', formData.subject);
     formDataWithFiles.append('description', formData.description);
     
-    // Append files with the same field name
+    // Append new files
     files.forEach((file) => {
       formDataWithFiles.append('files', file);
     });
 
+    // Append existing files that weren't removed
+    if (existingFiles.length > 0) {
+      formDataWithFiles.append('existing_files', JSON.stringify(existingFiles));
+    }
+
     try {
-      const result = await dispatch(createFeedback(formDataWithFiles));
-      if (createFeedback.fulfilled.match(result)) {
-        navigate('/dashboard');
+      let result;
+      if (isEditMode) {
+        result = await dispatch(updateFeedback({ id: id!, formData: formDataWithFiles }));
+        if (updateFeedback.fulfilled.match(result)) {
+          setSnackbarMessage(t('feedback.updateSuccess'));
+          setSnackbarOpen(true);
+          navigate('/dashboard');
+        }
+      } else {
+        result = await dispatch(createFeedback(formDataWithFiles));
+        if (createFeedback.fulfilled.match(result)) {
+          navigate('/dashboard');
+        }
       }
     } catch (error) {
       console.error('Feedback submission failed:', error);
+      setSnackbarMessage(isEditMode ? t('feedback.updateError') : t('feedback.submitError'));
+      setSnackbarOpen(true);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const removeExistingFile = (fileName: string) => {
+    setExistingFiles(prev => prev.filter(file => file !== fileName));
+  };
+
+  const getFileUrl = (fileName: string) => {
+    return `${import.meta.env.VITE_API_URL}/uploads/${fileName}`;
   };
 
   const feedbackTypes = [
@@ -225,7 +282,7 @@ const FeedbackForm = () => {
               component="h1"
               color="primary.main"
             >
-              {t('feedback.submitNew')}
+              {isEditMode ? t('feedback.editFeedback') : t('feedback.submitNew')}
             </Typography>
           </Box>
           
@@ -247,7 +304,7 @@ const FeedbackForm = () => {
                     label={t('feedback.type')}
                     onChange={handleSelectChange}
                     required
-                    disabled={submitting}
+                    disabled={submitting || isEditMode}
                   >
                     {feedbackTypes.map((type) => (
                       <MenuItem key={type.value} value={type.value}>
@@ -268,7 +325,7 @@ const FeedbackForm = () => {
                     label={t('feedback.department')}
                     onChange={handleDepartmentChange}
                     required
-                    disabled={submitting}
+                    disabled={submitting || isEditMode}
                   >
                     {departments.map((dept) => (
                       <MenuItem key={dept.value} value={dept.value}>
@@ -289,7 +346,7 @@ const FeedbackForm = () => {
                     label={t('feedback.agency')}
                     onChange={handleSelectChange}
                     required
-                    disabled={!formData.department || submitting || agenciesLoading}
+                    disabled={!formData.department || submitting || agenciesLoading || isEditMode}
                   >
                     {getAgenciesForDepartment().map((agency: { value: string; label: string }) => (
                       <MenuItem key={agency.value} value={agency.value}>
@@ -482,6 +539,51 @@ const FeedbackForm = () => {
               </Grid>
             </Grid>
           </form>
+
+          {existingFiles.length > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                {t('feedback.documents')}
+              </Typography>
+              <List>
+                {existingFiles.map((fileName, index) => (
+                  <ListItem
+                    key={index}
+                    secondaryAction={
+                      <IconButton edge="end" onClick={() => removeExistingFile(fileName)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemIcon>
+                      {fileName.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                        <ImageIcon color="primary" />
+                      ) : (
+                        <FileIcon color="primary" />
+                      )}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={fileName}
+                      secondary={
+                        fileName.match(/\.(jpg|jpeg|png|gif)$/i) && (
+                          <Link href={getFileUrl(fileName)} target="_blank" rel="noopener">
+                            {t('feedback.preview')}
+                          </Link>
+                        )
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          )}
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={() => setSnackbarOpen(false)}
+            message={snackbarMessage}
+          />
         </Box>
       </Container>
     </Box>

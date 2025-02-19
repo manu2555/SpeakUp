@@ -52,6 +52,16 @@ const router = createBrowserRouter([
     )
   },
   {
+    path: '/feedback/edit/:id',
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <FeedbackForm />
+        </Layout>
+      </ProtectedRoute>
+    )
+  },
+  {
     path: '/profile',
     element: (
       <ProtectedRoute>

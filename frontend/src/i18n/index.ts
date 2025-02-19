@@ -29,6 +29,7 @@ const resources = {
         lightMode: 'लाइट मोड में बदलें',
         darkMode: 'डार्क मोड में बदलें',
         ENQUIRE: 'पूछताछ',
+        actions: 'कार्रवाई'
       },
       auth: {
         login: 'लॉग इन',

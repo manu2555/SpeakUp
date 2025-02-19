@@ -4,8 +4,7 @@ import {
   createFeedbackHandler,
   getFeedbacksHandler,
   getFeedbackByIdHandler,
-  updateFeedbackStatusHandler,
-  deleteFeedbackHandler,
+  updateFeedbackHandler,
   uploadFeedbackFiles
 } from '../controllers/feedback';
 
@@ -23,10 +22,7 @@ router.get('/', getFeedbacksHandler);
 // Get single feedback
 router.get('/:id', getFeedbackByIdHandler);
 
-// Update feedback status (admin only)
-router.put('/:id', updateFeedbackStatusHandler);
-
-// Delete feedback
-router.delete('/:id', deleteFeedbackHandler);
+// Update feedback
+router.put('/:id', uploadFeedbackFiles, updateFeedbackHandler);
 
 export default router;

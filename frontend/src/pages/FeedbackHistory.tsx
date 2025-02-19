@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -22,7 +21,23 @@ import {
   Grid,
   Card,
   CardContent,
+  Tooltip,
   Container,
+  Link,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  Snackbar,
+  List,
+  ListItem,
+  ListItemText
 } from '@mui/material';
 import {
   KeyboardArrowDown as KeyboardArrowDownIcon,
@@ -30,11 +45,22 @@ import {
   Add as AddIcon,
   FilterList as FilterListIcon,
   BarChart as BarChartIcon,
+  Timeline as TimelineIcon,
   Feedback as FeedbackIcon,
+  AttachFile as AttachFileIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Email as EmailIcon,
+  Share as ShareIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  LinkedIn as LinkedInIcon,
+  WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
-import { getFeedbacks } from '../store/slices/feedbackSlice';
+import { getFeedbacks, deleteFeedback } from '../store/slices/feedbackSlice';
 import { Feedback } from '../types';
 
 interface RowProps {
@@ -45,7 +71,14 @@ interface RowProps {
 const Row = ({ feedback, isEvenRow }: RowProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [shareMenuAnchor, setShareMenuAnchor] = useState<null | HTMLElement>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const getTypeChipColor = (type: string) => {
@@ -109,6 +142,73 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
 
   const getAgencyName = (department: string, agencyCode: string) => {
     return t(`feedback.agencies.${department.toLowerCase()}.${agencyCode.toLowerCase()}`);
+  };
+
+  const getFileUrl = (fileName: string) => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8888';
+    return `${apiUrl}/uploads/${fileName}`;
+  };
+
+  const handleEdit = () => {
+    navigate(`/feedback/edit/${feedback.id}`, { state: { feedback } });
+  };
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteFeedback(feedback.id)).unwrap();
+      setSnackbarMessage(t('feedback.deleteSuccess'));
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage(t('feedback.deleteError'));
+      setSnackbarOpen(true);
+    }
+    setDeleteDialogOpen(false);
+  };
+
+  const handleEmailShare = () => {
+    const subject = encodeURIComponent(feedback.subject);
+    const body = encodeURIComponent(`
+${feedback.description}
+
+---
+${t('feedback.emailFooter')}
+${t('feedback.emailSignature')}
+    `);
+    
+    let mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+    
+    // Add attachments if present
+    if (feedback.file_paths && feedback.file_paths.length > 0) {
+      const attachments = feedback.file_paths.map(path => getFileUrl(path)).join(',');
+      mailtoLink += `&attachment=${encodeURIComponent(attachments)}`;
+    }
+    
+    window.location.href = mailtoLink;
+    setEmailDialogOpen(false);
+  };
+
+  const handleSocialShare = (platform: string) => {
+    const url = window.location.href;
+    const text = encodeURIComponent(`${feedback.subject} - ${feedback.description}`);
+    
+    let shareUrl = '';
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${text}%20${url}`;
+        break;
+    }
+    
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+    setShareMenuAnchor(null);
   };
 
   return (
@@ -192,6 +292,50 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
             minute: '2-digit'
           }) : 'N/A'}
         </TableCell>
+        <TableCell>
+          {feedback.file_paths && feedback.file_paths.length > 0 && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Chip
+                icon={<AttachFileIcon />}
+                label={`${feedback.file_paths.length} ${feedback.file_paths.length === 1 ? t('feedback.document') : t('feedback.documents')}`}
+                variant="outlined"
+                color="primary"
+                size="small"
+                onClick={() => setOpen(!open)}
+                sx={{ 
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                  }
+                }}
+              />
+            </Box>
+          )}
+        </TableCell>
+        <TableCell>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title={t('common.edit')}>
+              <IconButton size="small" onClick={handleEdit} color="primary">
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('common.delete')}>
+              <IconButton size="small" onClick={() => setDeleteDialogOpen(true)} color="error">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('common.email')}>
+              <IconButton size="small" onClick={() => setEmailDialogOpen(true)} color="primary">
+                <EmailIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t('common.share')}>
+              <IconButton size="small" onClick={(e) => setShareMenuAnchor(e.currentTarget)} color="primary">
+                <ShareIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
@@ -208,10 +352,196 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
               <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
                 {feedback.description}
               </Typography>
+              {feedback.file_paths && feedback.file_paths.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle1" gutterBottom component="div" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AttachFileIcon fontSize="small" />
+                    {t('feedback.documents')}
+                  </Typography>
+                  <Grid container spacing={1}>
+                    {feedback.file_paths.map((filePath, index) => {
+                      const fileName = filePath.split('/').pop() || `${t('feedback.document')} ${index + 1}`;
+                      const fileExt = fileName.split('.').pop()?.toLowerCase() || '';
+                      const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExt);
+                      
+                      return (
+                        <Grid item xs={12} sm={6} md={4} key={index}>
+                          <Paper
+                            sx={{
+                              p: 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              bgcolor: 'background.paper',
+                              '&:hover': {
+                                bgcolor: 'action.hover'
+                              }
+                            }}
+                          >
+                            <AttachFileIcon fontSize="small" color="primary" />
+                            <Link
+                              href={getFileUrl(filePath)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              sx={{
+                                textDecoration: 'none',
+                                color: 'primary.main',
+                                flex: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                '&:hover': {
+                                  textDecoration: 'underline'
+                                }
+                              }}
+                            >
+                              {fileName}
+                            </Link>
+                            {isImage && (
+                              <Tooltip title={t('feedback.preview')}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => window.open(getFileUrl(filePath), '_blank')}
+                                >
+                                  <img 
+                                    src={getFileUrl(filePath)} 
+                                    alt={fileName}
+                                    style={{ 
+                                      width: 20, 
+                                      height: 20, 
+                                      objectFit: 'cover',
+                                      borderRadius: 2
+                                    }} 
+                                  />
+                                </IconButton>
+                              </Tooltip>
+                            )}
+                          </Paper>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Box>
+              )}
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="delete-dialog-title"
+      >
+        <DialogTitle id="delete-dialog-title">
+          {t('feedback.deleteConfirmTitle')}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('feedback.deleteConfirmMessage')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            {t('common.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Email Share Dialog */}
+      <Dialog
+        open={emailDialogOpen}
+        onClose={() => setEmailDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>{t('feedback.emailShareTitle')}</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              {t('feedback.emailSubject')}
+            </Typography>
+            <Typography variant="body1">{feedback.subject}</Typography>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              {t('feedback.emailBody')}
+            </Typography>
+            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+              {feedback.description}
+            </Typography>
+          </Box>
+          {feedback.file_paths && feedback.file_paths.length > 0 && (
+            <Box>
+              <Typography variant="subtitle1" gutterBottom>
+                {t('feedback.attachments')}
+              </Typography>
+              <List>
+                {feedback.file_paths.map((path, index) => (
+                  <ListItem key={index}>
+                    <ListItemIcon>
+                      <AttachFileIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={path.split('/').pop()} />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEmailDialogOpen(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button onClick={handleEmailShare} color="primary" variant="contained">
+            {t('common.send')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Social Share Menu */}
+      <Menu
+        anchorEl={shareMenuAnchor}
+        open={Boolean(shareMenuAnchor)}
+        onClose={() => setShareMenuAnchor(null)}
+      >
+        <MenuItem onClick={() => handleSocialShare('facebook')}>
+          <ListItemIcon>
+            <FacebookIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary="Facebook" />
+        </MenuItem>
+        <MenuItem onClick={() => handleSocialShare('twitter')}>
+          <ListItemIcon>
+            <TwitterIcon sx={{ color: '#1DA1F2' }} />
+          </ListItemIcon>
+          <ListItemText primary="Twitter" />
+        </MenuItem>
+        <MenuItem onClick={() => handleSocialShare('linkedin')}>
+          <ListItemIcon>
+            <LinkedInIcon sx={{ color: '#0A66C2' }} />
+          </ListItemIcon>
+          <ListItemText primary="LinkedIn" />
+        </MenuItem>
+        <MenuItem onClick={() => handleSocialShare('whatsapp')}>
+          <ListItemIcon>
+            <WhatsAppIcon sx={{ color: '#25D366' }} />
+          </ListItemIcon>
+          <ListItemText primary="WhatsApp" />
+        </MenuItem>
+      </Menu>
+
+      {/* Success/Error Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+      />
     </>
   );
 };
@@ -448,21 +778,25 @@ const FeedbackHistory = () => {
             <Typography variant="h6" color="primary.main">
               {t('feedback.list')}
             </Typography>
-            <IconButton color="primary" size="small">
-              <FilterListIcon />
-            </IconButton>
+            <Tooltip title={t('common.filter')}>
+              <IconButton color="primary" size="small">
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
           <TableContainer sx={{ maxHeight: 'calc(100vh - 500px)', width: '100%' }}>
             <Table stickyHeader size="small" sx={{ width: '100%' }}>
               <TableHead>
                 <TableRow>
                   <TableCell padding="checkbox" sx={{ width: 40 }} />
-                  <TableCell sx={{ width: '25%' }}>{t('feedback.subject')}</TableCell>
-                  <TableCell sx={{ width: '15%' }}>{t('feedback.type')}</TableCell>
-                  <TableCell sx={{ width: '15%' }}>{t('feedback.department')}</TableCell>
+                  <TableCell sx={{ width: '20%' }}>{t('feedback.subject')}</TableCell>
+                  <TableCell sx={{ width: '10%' }}>{t('feedback.type')}</TableCell>
+                  <TableCell sx={{ width: '10%' }}>{t('feedback.department')}</TableCell>
                   <TableCell sx={{ width: '15%' }}>{t('feedback.agency')}</TableCell>
-                  <TableCell sx={{ width: '15%' }}>{t('feedback.statusLabel')}</TableCell>
+                  <TableCell sx={{ width: '10%' }}>{t('feedback.statusLabel')}</TableCell>
                   <TableCell sx={{ width: '15%' }}>{t('feedback.date')}</TableCell>
+                  <TableCell sx={{ width: '10%' }}>{t('feedback.documents')}</TableCell>
+                  <TableCell sx={{ width: '10%' }}>{t('common.actions')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

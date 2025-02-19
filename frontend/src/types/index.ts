@@ -36,9 +36,3 @@ export interface RootState {
   auth: AuthState;
   feedback: FeedbackState;
 }
-
-export interface ApiResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}

@@ -1,75 +1,127 @@
 import { Box, Typography } from '@mui/material';
-import { Forum as ForumIcon } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large';
-  showText?: boolean;
 }
 
-const Logo = ({ size = 'medium', showText = true }: LogoProps) => {
-  const getSize = () => {
-    switch (size) {
-      case 'small':
-        return { icon: 24, text: '1.25rem' };
-      case 'large':
-        return { icon: 48, text: '2rem' };
-      default:
-        return { icon: 32, text: '1.5rem' };
-    }
+const Logo = ({ size = 'medium' }: LogoProps) => {
+  const theme = useTheme();
+  
+  // Define sizes for different variants
+  const sizes = {
+    small: {
+      height: 32,
+      fontSize: '1.2rem',
+    },
+    medium: {
+      height: 40,
+      fontSize: '1.5rem',
+    },
+    large: {
+      height: 48,
+      fontSize: '1.8rem',
+    },
   };
 
-  const dimensions = getSize();
-
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1.5,
+      }}
+    >
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: dimensions.icon + 16,
-          height: dimensions.icon + 16,
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, #40E0D0 0%, #4169E1 100%)',
-          boxShadow: '0 4px 10px rgba(64, 224, 208, 0.3)',
           position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
-          }
+          height: sizes[size].height,
+          width: sizes[size].height * 1.2,
         }}
       >
-        <ForumIcon
+        {/* Background chat bubble */}
+        <Box
           sx={{
-            fontSize: dimensions.icon,
-            color: '#FFFFFF',
-            filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))',
+            position: 'absolute',
+            bottom: '15%',
+            right: '5%',
+            width: '60%',
+            height: '60%',
+            borderRadius: '12px',
+            transform: 'rotate(-10deg)',
+            background: theme.palette.warning.main,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-20%',
+              right: '20%',
+              width: '30%',
+              height: '30%',
+              background: theme.palette.warning.main,
+              clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
+              transform: 'rotate(-45deg)',
+            },
+          }}
+        />
+        
+        {/* Foreground chat bubble */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '10%',
+            left: '10%',
+            width: '70%',
+            height: '70%',
+            borderRadius: '12px',
+            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+            boxShadow: `0 4px 8px ${theme.palette.primary.main}40`,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-15%',
+              left: '20%',
+              width: '30%',
+              height: '30%',
+              background: theme.palette.primary.main,
+              clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
+              transform: 'rotate(45deg)',
+            },
+            // Chat bubble lines
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '60%',
+              height: '60%',
+              backgroundImage: `
+                linear-gradient(${theme.palette.primary.light}, ${theme.palette.primary.light}),
+                linear-gradient(${theme.palette.primary.light}, ${theme.palette.primary.light}),
+                linear-gradient(${theme.palette.primary.light}, ${theme.palette.primary.light})
+              `,
+              backgroundSize: '100% 2px, 100% 2px, 100% 2px',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: '0 20%, 0 50%, 0 80%',
+              opacity: 0.5,
+            },
           }}
         />
       </Box>
-      {showText && (
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: dimensions.text,
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #40E0D0 0%, #4169E1 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            letterSpacing: '-0.02em',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          Web App
-        </Typography>
-      )}
+      <Typography
+        variant="h6"
+        component="span"
+        sx={{
+          fontSize: sizes[size].fontSize,
+          fontWeight: 700,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          letterSpacing: '-0.5px',
+        }}
+      >
+        SpeakUp
+      </Typography>
     </Box>
   );
 };

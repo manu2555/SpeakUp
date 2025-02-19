@@ -17,7 +17,31 @@
     "setPassword": "Set Your Password",
     "welcomeSetPassword": "Welcome {{name}}! Please set your password to complete registration",
     "completeRegistration": "Complete Registration",
-    "logout": "Logout"
+    "logout": "Logout",
+    "welcomeBack": "Welcome back! Please log in to your account",
+    "joinCommunity": "Join our community and make your voice heard",
+    "tagline": "Your Voice Matters",
+    "description": "SpeakUp is a platform where your feedback shapes better services. Share your experiences, suggestions, and concerns with organizations that matter to you.",
+    "registerTagline": "Make a Difference Today",
+    "registerDescription": "Join thousands of users who are already making an impact through their feedback and suggestions.",
+    "feature1Title": "Direct Impact",
+    "feature1Desc": "Your feedback goes directly to decision-makers, ensuring your voice is heard where it matters most.",
+    "feature2Title": "Track Progress",
+    "feature2Desc": "Follow the status of your feedback and see how organizations respond to your concerns.",
+    "feature3Title": "Stay Connected",
+    "feature3Desc": "Get updates and notifications about the issues you care about, keeping you informed every step of the way.",
+    "benefit1Title": "Easy Submission",
+    "benefit1Desc": "Submit feedback quickly and easily with our user-friendly interface and organized categories.",
+    "benefit2Title": "Document Support",
+    "benefit2Desc": "Attach relevant documents, images, or files to provide comprehensive context for your feedback.",
+    "benefit3Title": "Share & Connect",
+    "benefit3Desc": "Share your feedback with others and connect with people who share similar concerns.",
+    "trust1": "Secure & Private",
+    "trust2": "Join 10K+ Users",
+    "trust3": "Trusted Platform",
+    "benefit1": "Secure Platform",
+    "benefit2": "Quick Response",
+    "benefit3": "Global Reach"
   },
   "common": {
     "dashboard": "Dashboard",
@@ -31,18 +55,19 @@
     "lightMode": "Switch to Light Mode",
     "darkMode": "Switch to Dark Mode",
     "profile": "Profile",
-    "actions": "Actions",
-    "edit": "Edit",
-    "delete": "Delete",
-    "shareEmail": "Share via Email",
-    "shareSocial": "Share on Social Media",
     "menu": {
       "feedback": {
         "submit": "Submit Feedback",
         "history": "Feedback History",
         "dashboard": "Dashboard"
       }
-    }
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "email": "Share via Email",
+    "share": "Share",
+    "send": "Send",
+    "actions": "Actions"
   },
   "profile": {
     "title": "Profile",
@@ -163,8 +188,17 @@
     "chooseFiles": "Choose Files",
     "deleteConfirmTitle": "Delete Feedback",
     "deleteConfirmMessage": "Are you sure you want to delete this feedback? This action cannot be undone.",
-    "feedbackDeleteSuccess": "Feedback deleted successfully",
-    "feedbackDeleteError": "Failed to delete feedback"
+    "deleteSuccess": "Feedback deleted successfully",
+    "deleteError": "Failed to delete feedback",
+    "emailShareTitle": "Share Feedback via Email",
+    "emailSubject": "Subject",
+    "emailBody": "Message",
+    "attachments": "Attachments",
+    "emailFooter": "This feedback was shared from SpeakUp - Your Voice Matters",
+    "emailSignature": "Best regards,\nSpeakUp Team",
+    "editFeedback": "Edit Feedback",
+    "updateSuccess": "Feedback updated successfully",
+    "updateError": "Failed to update feedback"
   },
   "errors": {
     "required": "This field is required",
