@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import routes from './routes';
 import { supabaseAdmin } from './lib/supabase';
 import { env } from 'process';
+import path from 'path';
 
 const app = express();
 
@@ -79,6 +80,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(requestLogger);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api', routes);

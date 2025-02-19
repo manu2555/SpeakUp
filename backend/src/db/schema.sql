@@ -22,9 +22,13 @@ CREATE TABLE IF NOT EXISTS public.feedbacks (
     description TEXT NOT NULL,
     status VARCHAR(50) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
     user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+    file_paths TEXT[],
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Comment on the file_paths column
+COMMENT ON COLUMN public.feedbacks.file_paths IS 'Array of file paths for uploaded documents';
 
 -- Drop existing RLS policies if they exist
 DROP POLICY IF EXISTS "Users can view their own data" ON public.users;

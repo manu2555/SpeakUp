@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -17,10 +17,25 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
+  Input,
+  FormHelperText,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
+import {
+  CloudUpload as CloudUploadIcon,
+  Delete as DeleteIcon,
+  InsertDriveFile as FileIcon,
+  Image as ImageIcon,
+  PictureAsPdf as PdfIcon,
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { createFeedback } from '../store/slices/feedbackSlice';
+import { getAgencies } from '../store/slices/agencySlice';
 
 interface FeedbackFormData {
   type: string;
@@ -30,11 +45,17 @@ interface FeedbackFormData {
   description: string;
 }
 
+interface Agency {
+  code: string;
+  name: string;
+}
+
 const FeedbackForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.feedback);
+  const { isLoading: feedbackLoading, error } = useAppSelector((state) => state.feedback);
+  const { agencies, isLoading: agenciesLoading } = useAppSelector((state) => state.agencies);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -46,6 +67,8 @@ const FeedbackForm = () => {
     description: '',
   });
   const [submitting, setSubmitting] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -70,26 +93,85 @@ const FeedbackForm = () => {
       department,
       agency: '', // Reset agency when department changes
     }));
+    // Fetch agencies for the selected department
+    dispatch(getAgencies(department.toLowerCase()));
   };
 
   const getAgenciesForDepartment = () => {
     if (!formData.department) return [];
-    
-    const departmentKey = formData.department.toLowerCase();
-    const agencies = t(`agencies.${departmentKey}`, { returnObjects: true }) as Record<string, string>;
-    
-    return Object.entries(agencies).map(([value, label]) => ({
-      value: value.toUpperCase(),
-      label
+    return agencies.map((agency: Agency) => ({
+      value: agency.code,
+      label: agency.name
     }));
+  };
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    handleFiles(droppedFiles);
+  }, []);
+
+  const handleFiles = (selectedFiles: File[]) => {
+    if (selectedFiles.length > 5) {
+      setFileError(t('feedback.fileLimitExceeded'));
+      return;
+    }
+    const validFiles = selectedFiles.filter(file => {
+      const isValidType = ['application/pdf', 'image/jpeg', 'image/png'].includes(file.type);
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5 MB
+      return isValidType && isValidSize;
+    });
+    if (validFiles.length !== selectedFiles.length) {
+      setFileError(t('feedback.invalidFile'));
+    } else {
+      setFileError(null);
+    }
+    setFiles(validFiles);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    handleFiles(selectedFiles);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    setFileError(null);
+  };
+
+  const getFileIcon = (file: File) => {
+    if (file.type === 'application/pdf') return <PdfIcon color="primary" />;
+    if (file.type.startsWith('image/')) return <ImageIcon color="primary" />;
+    return <FileIcon color="primary" />;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     
+    // Prepare form data with files
+    const formDataWithFiles = new FormData();
+    formDataWithFiles.append('type', formData.type);
+    formDataWithFiles.append('department', formData.department);
+    formDataWithFiles.append('agency', formData.agency);
+    formDataWithFiles.append('subject', formData.subject);
+    formDataWithFiles.append('description', formData.description);
+    
+    // Append files with the same field name
+    files.forEach((file) => {
+      formDataWithFiles.append('files', file);
+    });
+
     try {
-      const result = await dispatch(createFeedback(formData));
+      const result = await dispatch(createFeedback(formDataWithFiles));
       if (createFeedback.fulfilled.match(result)) {
         navigate('/dashboard');
       }
@@ -107,13 +189,14 @@ const FeedbackForm = () => {
   ];
 
   const departments = [
-    { value: 'BANKS', label: t('departments.banks') },
-    { value: 'AIRLINES', label: t('departments.airlines') },
-    { value: 'TELECOMS', label: t('departments.telecoms') },
-    { value: 'HEALTHCARE', label: t('departments.healthcare') },
-    { value: 'GOVERNMENT', label: t('departments.government') },
-    { value: 'FINANCE', label: t('departments.finance') },
-    { value: 'ENTERTAINMENT', label: t('departments.entertainment') },
+    { value: 'banks', label: t('feedback.departments.banks') },
+    { value: 'airlines', label: t('feedback.departments.airlines') },
+    { value: 'telecoms', label: t('feedback.departments.telecoms') },
+    { value: 'healthcare', label: t('feedback.departments.healthcare') },
+    { value: 'government', label: t('feedback.departments.government') },
+    { value: 'finance', label: t('feedback.departments.finance') },
+    { value: 'entertainment', label: t('feedback.departments.entertainment') },
+    { value: 'railways', label: t('feedback.departments.railways') },
   ];
 
   return (
@@ -198,17 +281,17 @@ const FeedbackForm = () => {
 
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel id="agency-label">Agency</InputLabel>
+                  <InputLabel id="agency-label">{t('feedback.agency')}</InputLabel>
                   <Select
                     labelId="agency-label"
                     name="agency"
                     value={formData.agency}
-                    label="Agency"
+                    label={t('feedback.agency')}
                     onChange={handleSelectChange}
                     required
-                    disabled={!formData.department || submitting}
+                    disabled={!formData.department || submitting || agenciesLoading}
                   >
-                    {getAgenciesForDepartment().map((agency) => (
+                    {getAgenciesForDepartment().map((agency: { value: string; label: string }) => (
                       <MenuItem key={agency.value} value={agency.value}>
                         {agency.label}
                       </MenuItem>
@@ -243,6 +326,127 @@ const FeedbackForm = () => {
                   variant="outlined"
                   disabled={submitting}
                 />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography 
+                  variant="subtitle1" 
+                  color="text.primary" 
+                  sx={{ 
+                    mb: 1,
+                    fontWeight: 500 
+                  }}
+                >
+                  {t('feedback.uploadDocuments')}
+                </Typography>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 2,
+                    bgcolor: 'background.paper',
+                    border: '2px dashed',
+                    borderColor: theme.palette.primary.main,
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease-in-out',
+                    '&:hover': {
+                      borderColor: theme.palette.primary.dark,
+                      bgcolor: 'action.hover',
+                    },
+                  }}
+                  onDrop={handleDrop}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: 2,
+                      p: 3,
+                    }}
+                  >
+                    <input
+                      type="file"
+                      id="file-upload"
+                      multiple
+                      onChange={handleFileChange}
+                      style={{ display: 'none' }}
+                      accept=".pdf,.jpg,.jpeg,.png"
+                    />
+                    <label htmlFor="file-upload" style={{ width: '100%', textAlign: 'center' }}>
+                      <CloudUploadIcon
+                        sx={{
+                          fontSize: 48,
+                          color: theme.palette.primary.main,
+                          mb: 1,
+                        }}
+                      />
+                      <Typography 
+                        variant="body1" 
+                        color="text.secondary" 
+                        align="center" 
+                        sx={{ mb: 2 }}
+                      >
+                        {t('feedback.fileUploadHint')}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        component="span"
+                        disabled={submitting}
+                        startIcon={<CloudUploadIcon />}
+                      >
+                        {t('feedback.chooseFiles')}
+                      </Button>
+                    </label>
+                  </Box>
+                </Paper>
+
+                {fileError && (
+                  <Alert severity="error" sx={{ mt: 2 }}>
+                    {fileError}
+                  </Alert>
+                )}
+
+                {files.length > 0 && (
+                  <Paper variant="outlined" sx={{ mt: 2 }}>
+                    <List sx={{ py: 0 }}>
+                      {files.map((file, index) => (
+                        <ListItem
+                          key={index}
+                          sx={{
+                            borderBottom: index < files.length - 1 ? '1px solid' : 'none',
+                            borderColor: 'divider',
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+                            {getFileIcon(file)}
+                            <ListItemText
+                              primary={file.name}
+                              secondary={formatFileSize(file.size)}
+                              sx={{
+                                '& .MuiListItemText-primary': {
+                                  fontWeight: 500,
+                                },
+                              }}
+                            />
+                          </Box>
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              edge="end"
+                              onClick={() => removeFile(index)}
+                              disabled={submitting}
+                              color="error"
+                              size="small"
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Paper>
+                )}
               </Grid>
 
               <Grid item xs={12}>

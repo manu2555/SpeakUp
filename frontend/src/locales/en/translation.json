@@ -31,6 +31,11 @@
     "lightMode": "Switch to Light Mode",
     "darkMode": "Switch to Dark Mode",
     "profile": "Profile",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "shareEmail": "Share via Email",
+    "shareSocial": "Share on Social Media",
     "menu": {
       "feedback": {
         "submit": "Submit Feedback",
@@ -61,6 +66,10 @@
     "statusLabel": "Status",
     "date": "Date",
     "details": "Feedback Details",
+    "description": "Description",
+    "selectType": "Select Type",
+    "selectDepartment": "Select Department",
+    "selectAgency": "Select Agency",
     "types": {
       "COMPLAINT": "Complaint",
       "SUGGESTION": "Suggestion",
@@ -70,7 +79,92 @@
       "PENDING": "Pending",
       "IN_PROGRESS": "In Progress",
       "RESOLVED": "Resolved"
-    }
+    },
+    "departments": {
+      "banks": "Banks",
+      "airlines": "Airlines",
+      "telecoms": "Telecommunications",
+      "healthcare": "Healthcare",
+      "government": "Government",
+      "finance": "Finance",
+      "entertainment": "Entertainment",
+      "railways": "Railways"
+    },
+    "agencies": {
+      "banks": {
+        "sbi": "State Bank of India",
+        "pnb": "Punjab National Bank",
+        "boi": "Bank of India",
+        "bob": "Bank of Baroda",
+        "hdfc": "HDFC Bank",
+        "icici": "ICICI Bank",
+        "axis": "Axis Bank",
+        "kotak": "Kotak Mahindra Bank"
+      },
+      "airlines": {
+        "airindia": "Air India",
+        "vistara": "Vistara",
+        "indigo": "IndiGo",
+        "spicejet": "SpiceJet",
+        "airasia": "Air Asia India",
+        "akasa": "Akasa Air"
+      },
+      "telecoms": {
+        "jio": "Reliance Jio",
+        "airtel": "Bharti Airtel",
+        "vi": "Vodafone Idea",
+        "bsnl": "BSNL",
+        "mtnl": "MTNL"
+      },
+      "healthcare": {
+        "aiims": "All India Institute of Medical Sciences",
+        "apollo": "Apollo Hospitals",
+        "fortis": "Fortis Healthcare",
+        "max": "Max Healthcare",
+        "medanta": "Medanta"
+      },
+      "government": {
+        "central": "Central Government",
+        "state": "State Government",
+        "municipal": "Municipal Corporation",
+        "panchayat": "Panchayati Raj"
+      },
+      "finance": {
+        "sebi": "SEBI",
+        "rbi": "Reserve Bank of India",
+        "irdai": "IRDAI",
+        "pfrda": "PFRDA",
+        "nabard": "NABARD"
+      },
+      "entertainment": {
+        "netflix": "Netflix India",
+        "amazon": "Amazon Prime Video",
+        "hotstar": "Disney+ Hotstar",
+        "sony": "Sony LIV",
+        "zee": "ZEE5"
+      },
+      "railways": {
+        "ir": "Indian Railways",
+        "irctc": "IRCTC",
+        "konkan": "Konkan Railways",
+        "metro": "Metro Railways",
+        "nfr": "Northeast Frontier Railway",
+        "wr": "Western Railway"
+      }
+    },
+    "fileUploadHint": "Upload up to 5 files (PDF, JPEG, PNG). Max 5MB each.",
+    "fileLimitExceeded": "Maximum 5 files allowed",
+    "invalidFile": "Invalid file type or size. Only PDF, JPEG, PNG files up to 5MB are allowed",
+    "documents": "Uploaded Documents",
+    "document": "Document",
+    "preview": "Preview Image",
+    "viewDocuments": "View Documents",
+    "uploadDocuments": "Upload Relevant Documents",
+    "chooseFiles": "Choose Files",
+    "deleteConfirmTitle": "Delete Feedback",
+    "deleteConfirmMessage": "Are you sure you want to delete this feedback? This action cannot be undone.",
+    "feedbackDeleteSuccess": "Feedback deleted successfully",
+    "feedbackDeleteError": "Failed to delete feedback"
   },
   "errors": {
     "required": "This field is required",
@@ -82,6 +176,11 @@
     "tryReloading": "Please try reloading the page",
     "emailSendFailed": "Failed to send verification email. Please try again.",
     "emailExists": "This email is already registered",
-    "invalidCredentials": "Invalid email or password"
+    "invalidCredentials": "Invalid email or password",
+    "fileUpload": {
+      "tooLarge": "File is too large. Maximum size is 5MB",
+      "invalidType": "Invalid file type. Only PDF, JPEG, and PNG files are allowed",
+      "tooMany": "Too many files. Maximum 5 files allowed"
+    }
   }
 } 

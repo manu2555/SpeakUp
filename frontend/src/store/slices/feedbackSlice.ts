@@ -2,9 +2,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { Feedback, FeedbackState } from '../../types';
 import api from '../../services/api';
 
-interface CreateFeedbackData {
+export interface CreateFeedbackData {
   type: string;
   department: string;
+  agency: string;
   subject: string;
   description: string;
 }
@@ -29,9 +30,15 @@ export const getFeedbacks = createAsyncThunk(
 
 export const createFeedback = createAsyncThunk(
   'feedback/createFeedback',
-  async (data: CreateFeedbackData, { rejectWithValue }) => {
+  async (data: FormData | CreateFeedbackData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/feedback', data);
+      const response = await api.post('/feedback', data, {
+        headers: data instanceof FormData ? {
+          'Content-Type': 'multipart/form-data',
+        } : {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to create feedback');

@@ -12,10 +12,11 @@ export interface Feedback {
   agency: string;
   subject: string;
   description: string;
-  status: 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'REJECTED';
+  status: 'PENDING' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
   user_id: string;
-  created_at?: string;
-  updated_at?: string;
+  file_paths?: string[];
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AuthState {
@@ -34,4 +35,10 @@ export interface FeedbackState {
 export interface RootState {
   auth: AuthState;
   feedback: FeedbackState;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
 }

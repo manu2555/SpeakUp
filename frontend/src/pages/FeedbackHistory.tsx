@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Table,
@@ -21,7 +22,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Tooltip,
   Container,
 } from '@mui/material';
 import {
@@ -30,11 +30,9 @@ import {
   Add as AddIcon,
   FilterList as FilterListIcon,
   BarChart as BarChartIcon,
-  Timeline as TimelineIcon,
   Feedback as FeedbackIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { getFeedbacks } from '../store/slices/feedbackSlice';
 import { Feedback } from '../types';
@@ -45,8 +43,8 @@ interface RowProps {
 }
 
 const Row = ({ feedback, isEvenRow }: RowProps) => {
-  const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -105,6 +103,14 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
     }
   };
 
+  const getDepartmentName = (department: string) => {
+    return t(`feedback.departments.${department.toLowerCase()}`);
+  };
+
+  const getAgencyName = (department: string, agencyCode: string) => {
+    return t(`feedback.agencies.${department.toLowerCase()}.${agencyCode.toLowerCase()}`);
+  };
+
   return (
     <>
       <TableRow 
@@ -126,7 +132,7 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
               transform: open ? 'rotate(-180deg)' : 'rotate(0)',
             }}
           >
-            <KeyboardArrowDownIcon />
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
         <TableCell 
@@ -157,36 +163,10 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
           />
         </TableCell>
         <TableCell>
-          <Chip
-            label={t(`departments.${feedback.department.toLowerCase()}`)}
-            variant="outlined"
-            sx={{ 
-              minWidth: 100,
-              borderColor: '#3282B8',
-              color: '#3282B8',
-              '&:hover': {
-                borderColor: '#0F4C75',
-                color: '#0F4C75'
-              }
-            }}
-            size={isMobile ? "small" : "medium"}
-          />
+          {getDepartmentName(feedback.department)}
         </TableCell>
         <TableCell>
-          <Chip
-            label={t(`agencies.${feedback.department.toLowerCase()}.${feedback.agency.toLowerCase()}`)}
-            variant="outlined"
-            sx={{ 
-              minWidth: 100,
-              borderColor: '#3282B8',
-              color: '#3282B8',
-              '&:hover': {
-                borderColor: '#0F4C75',
-                color: '#0F4C75'
-              }
-            }}
-            size={isMobile ? "small" : "medium"}
-          />
+          {getAgencyName(feedback.department, feedback.agency)}
         </TableCell>
         <TableCell>
           <Chip
@@ -214,7 +194,7 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ 
               margin: 2,
@@ -468,11 +448,9 @@ const FeedbackHistory = () => {
             <Typography variant="h6" color="primary.main">
               {t('feedback.list')}
             </Typography>
-            <Tooltip title={t('common.filter')}>
-              <IconButton color="primary" size="small">
-                <FilterListIcon />
-              </IconButton>
-            </Tooltip>
+            <IconButton color="primary" size="small">
+              <FilterListIcon />
+            </IconButton>
           </Box>
           <TableContainer sx={{ maxHeight: 'calc(100vh - 500px)', width: '100%' }}>
             <Table stickyHeader size="small" sx={{ width: '100%' }}>

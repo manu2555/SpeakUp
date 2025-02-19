@@ -69,7 +69,23 @@ const resources = {
         noFeedbacks: 'कोई प्रतिक्रिया नहीं मिली',
         details: 'प्रतिक्रिया विवरण',
         date: 'जमा करने की तिथि',
-        list: 'प्रतिक्रिया सूची'
+        list: 'प्रतिक्रिया सूची',
+        fileUploadHint: "5 फ़ाइलें अपलोड करें (PDF, JPEG, PNG)। प्रत्येक अधिकतम 5MB",
+        fileLimitExceeded: "अधिकतम 5 फ़ाइलें की अनुमति है",
+        invalidFile: "अमान्य फ़ाइल प्रकार या आकार। केवल PDF, JPEG, PNG फ़ाइलें 5MB तक की अनुमति है",
+        documents: "अपलोड किए गए दस्तावेज़",
+        document: "दस्तावेज़",
+        viewDocuments: "दस्तावेज़ देखें",
+        departments: {
+          banks: "बैंक",
+          airlines: "एयरलाइंस",
+          telecoms: "दूरसंचार",
+          healthcare: "स्वास्थ्य सेवा",
+          government: "सरकार",
+          finance: "वित्त",
+          entertainment: "मनोरंजन",
+          railways: "रेलवे"
+        }
       },
       departments: {
         banks: 'बैंक',
@@ -159,6 +175,11 @@ const resources = {
         somethingWentWrong: 'कुछ गलत हो गया',
         tryReloading: 'कृपया पेज को रीलोड करें',
         reload: 'पेज रीलोड करें',
+        fileUpload: {
+          tooLarge: "फ़ाइल बहुत बड़ी है। अधिकतम आकार 5MB है",
+          invalidType: "अमान्य फ़ाइल प्रकार। केवल PDF, JPEG और PNG फ़ाइलों की अनुमति है",
+          tooMany: "बहुत सारी फ़ाइलें। अधिकतम 5 फ़ाइलों की अनुमति है"
+        }
       },
     },
   },
