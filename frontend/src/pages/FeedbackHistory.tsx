@@ -66,12 +66,34 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks';
 import { getFeedbacks, deleteFeedback } from '../store/slices/feedbackSlice';
+import { getAgencyByCode } from '../store/slices/agencySlice';
 import { Feedback } from '../types';
 
 interface RowProps {
   feedback: Feedback;
   isEvenRow: boolean;
 }
+
+// Add this type for agency emails
+interface AgencyEmails {
+  [key: string]: {
+    [key: string]: string;
+  };
+}
+
+const agencyEmails: AgencyEmails = {
+  banks: {
+    sbi: 'customercare@sbi.co.in',
+    pnb: 'customercare@pnb.co.in',
+    boi: 'customercare@bankofindia.co.in',
+    bob: 'customercare@bankofbaroda.com',
+    hdfc: 'customercare@hdfcbank.com',
+    icici: 'customercare@icicibank.com',
+    axis: 'customercare@axisbank.com',
+    kotak: 'customercare@kotak.com'
+  },
+  // ... add other agency emails as needed
+};
 
 const Row = ({ feedback, isEvenRow }: RowProps) => {
   const { t } = useTranslation();
@@ -85,6 +107,18 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { user } = useAppSelector((state) => state.auth);
+  const { selectedAgency } = useAppSelector((state) => state.agencies);
+
+  // Add useEffect to fetch agency details when email dialog opens
+  useEffect(() => {
+    if (emailDialogOpen) {
+      dispatch(getAgencyByCode({ 
+        department: feedback.department, 
+        code: feedback.agency 
+      }));
+    }
+  }, [emailDialogOpen, feedback.department, feedback.agency, dispatch]);
 
   const getTypeChipColor = (type: string) => {
     switch (type) {
@@ -171,22 +205,46 @@ const Row = ({ feedback, isEvenRow }: RowProps) => {
   };
 
   const handleEmailShare = () => {
-    const subject = encodeURIComponent(feedback.subject);
-    const body = encodeURIComponent(`
+    const agencyEmail = selectedAgency?.customer_care_email;
+    if (!agencyEmail) {
+      setSnackbarMessage(t('feedback.noAgencyEmail'));
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const subject = encodeURIComponent(`Feedback: ${feedback.subject}`);
+    
+    // Create plain text email body with proper formatting
+    const emailBody = `Dear ${t(`feedback.agencies.${feedback.department}.${feedback.agency}`)} Team,
+
+I am writing to share a feedback regarding your services.
+
+FEEDBACK DETAILS
+---------------
+Type: ${t(`feedback.types.${feedback.type}`)}
+Department: ${t(`feedback.departments.${feedback.department}`)}
+Agency: ${t(`feedback.agencies.${feedback.department}.${feedback.agency}`)}
+Status: ${t(`feedback.statuses.${feedback.status}`)}
+
+DESCRIPTION
+----------
 ${feedback.description}
 
----
+${feedback.file_paths && feedback.file_paths.length > 0 ? `
+ATTACHED DOCUMENTS
+----------------
+${feedback.file_paths.map(path => `${getFileUrl(path)}`).join('\n')}
+` : ''}
+
+-------------------
 ${t('feedback.emailFooter')}
+
 ${t('feedback.emailSignature')}
-    `);
-    
-    let mailtoLink = `mailto:?subject=${subject}&body=${body}`;
-    
-    // Add attachments if present
-    if (feedback.file_paths && feedback.file_paths.length > 0) {
-      const attachments = feedback.file_paths.map(path => getFileUrl(path)).join(',');
-      mailtoLink += `&attachment=${encodeURIComponent(attachments)}`;
-    }
+${user?.name || 'User'}
+    `;
+
+    // Create mailto link with plain text body
+    const mailtoLink = `mailto:${agencyEmail}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
     
     window.location.href = mailtoLink;
     setEmailDialogOpen(false);
@@ -468,41 +526,92 @@ ${t('feedback.emailSignature')}
         <DialogContent>
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" gutterBottom>
-              {t('feedback.emailSubject')}
+              {t('feedback.emailTo')}
             </Typography>
-            <Typography variant="body1">{feedback.subject}</Typography>
+            <Typography variant="body1">
+              {selectedAgency?.customer_care_email || t('feedback.noAgencyEmail')}
+            </Typography>
           </Box>
+          
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" gutterBottom>
-              {t('feedback.emailBody')}
+              {t('feedback.emailSubject')}
             </Typography>
-            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-              {feedback.description}
-            </Typography>
+            <Typography variant="body1">Feedback: {feedback.subject}</Typography>
           </Box>
-          {feedback.file_paths && feedback.file_paths.length > 0 && (
-            <Box>
-              <Typography variant="subtitle1" gutterBottom>
-                {t('feedback.attachments')}
+
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="subtitle1" gutterBottom>
+              {t('feedback.emailPreview')}
+            </Typography>
+            <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" color="primary" gutterBottom>
+                  Feedback Details
+                </Typography>
+                <Box sx={{ pl: 2 }}>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Type:</strong> {t(`feedback.types.${feedback.type}`)}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Department:</strong> {t(`feedback.departments.${feedback.department}`)}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <strong>Agency:</strong> {t(`feedback.agencies.${feedback.department}.${feedback.agency}`)}
+                  </Typography>
+                  <Typography variant="body2">
+                    <strong>Status:</strong> {t(`feedback.statuses.${feedback.status}`)}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography variant="subtitle2" color="primary" gutterBottom>
+                Description
               </Typography>
-              <List>
-                {feedback.file_paths.map((path, index) => (
-                  <ListItem key={index}>
-                    <ListItemIcon>
-                      <AttachFileIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={path.split('/').pop()} />
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          )}
+              <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', pl: 2, mb: 2 }}>
+                {feedback.description}
+              </Typography>
+
+              {feedback.file_paths && feedback.file_paths.length > 0 && (
+                <Box>
+                  <Typography variant="subtitle2" color="primary" gutterBottom>
+                    {t('feedback.attachments')}
+                  </Typography>
+                  <List dense sx={{ pl: 2 }}>
+                    {feedback.file_paths.map((path, index) => (
+                      <ListItem key={index} sx={{ p: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 32 }}>
+                          <AttachFileIcon fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText primary={path.split('/').pop()} />
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              )}
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="body2" color="text.secondary">
+                {t('feedback.emailFooter')}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                {t('feedback.emailSignature')}<br />
+                {user?.name || 'User'}
+              </Typography>
+            </Paper>
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEmailDialogOpen(false)}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleEmailShare} color="primary" variant="contained">
+          <Button 
+            onClick={handleEmailShare} 
+            color="primary" 
+            variant="contained"
+            disabled={!selectedAgency?.customer_care_email}
+          >
             {t('common.send')}
           </Button>
         </DialogActions>

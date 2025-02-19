@@ -13,14 +13,17 @@ const Logo = ({ size = 'medium' }: LogoProps) => {
     small: {
       height: 32,
       fontSize: '1.2rem',
+      iconSize: 40,
     },
     medium: {
       height: 40,
-      fontSize: '1.5rem',
+      fontSize: '1.75rem',
+      iconSize: 48,
     },
     large: {
       height: 48,
-      fontSize: '1.8rem',
+      fontSize: '2.25rem',
+      iconSize: 64,
     },
   };
 
@@ -29,14 +32,15 @@ const Logo = ({ size = 'medium' }: LogoProps) => {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1.5,
+        gap: 2,
       }}
     >
       <Box
         sx={{
           position: 'relative',
-          height: sizes[size].height,
-          width: sizes[size].height * 1.2,
+          height: sizes[size].iconSize,
+          width: sizes[size].iconSize * 1.2,
+          filter: 'drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15))',
         }}
       >
         {/* Background chat bubble */}
@@ -50,6 +54,7 @@ const Logo = ({ size = 'medium' }: LogoProps) => {
             borderRadius: '12px',
             transform: 'rotate(-10deg)',
             background: theme.palette.warning.main,
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -74,7 +79,7 @@ const Logo = ({ size = 'medium' }: LogoProps) => {
             height: '70%',
             borderRadius: '12px',
             background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-            boxShadow: `0 4px 8px ${theme.palette.primary.main}40`,
+            boxShadow: `0 6px 12px ${theme.palette.primary.main}40`,
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -103,21 +108,33 @@ const Logo = ({ size = 'medium' }: LogoProps) => {
               backgroundSize: '100% 2px, 100% 2px, 100% 2px',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: '0 20%, 0 50%, 0 80%',
-              opacity: 0.5,
+              opacity: 0.7,
             },
           }}
         />
       </Box>
       <Typography
-        variant="h6"
+        variant="h4"
         component="span"
         sx={{
           fontSize: sizes[size].fontSize,
-          fontWeight: 700,
+          fontWeight: 800,
+          letterSpacing: '-0.5px',
           background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          letterSpacing: '-0.5px',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -4,
+            left: 0,
+            width: '100%',
+            height: 2,
+            background: `linear-gradient(90deg, transparent, ${theme.palette.primary.main}40, transparent)`,
+            borderRadius: 2,
+          }
         }}
       >
         SpeakUp

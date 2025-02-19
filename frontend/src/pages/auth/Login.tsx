@@ -288,71 +288,97 @@ const Login = () => {
               }}
             >
               <Box sx={{ mb: 4, textAlign: 'center' }}>
-                <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
+                <Box 
+                  sx={{ 
+                    mb: 4, 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    transform: 'scale(1.1)',
+                    '&:hover': {
+                      transform: 'scale(1.15)',
+                      transition: 'transform 0.3s ease-in-out',
+                    },
+                  }}
+                >
                   <Logo size="large" />
                 </Box>
                 <Typography 
                   variant="h5" 
                   component="h1" 
                   gutterBottom
-                  sx={{ fontWeight: 600 }}
+                  sx={{ 
+                    fontWeight: 700,
+                    fontSize: '1.75rem',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    mb: 2,
+                  }}
                 >
                   {t('auth.login')}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography 
+                  variant="body1" 
+                  color="text.secondary"
+                  sx={{ 
+                    fontSize: '1.1rem',
+                    maxWidth: '80%',
+                    mx: 'auto',
+                  }}
+                >
                   {t('auth.welcomeBack')}
                 </Typography>
               </Box>
-
-              {error && (
+        
+        {error && (
                 <Alert severity="error" sx={{ mb: 3 }}>
-                  {error}
-                </Alert>
-              )}
+            {error}
+          </Alert>
+        )}
 
-              <form onSubmit={handleSubmit}>
-                <TextField
-                  fullWidth
-                  label={t('auth.email')}
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  margin="normal"
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label={t('auth.email')}
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            margin="normal"
                   disabled={isLoading}
-                />
-                <TextField
-                  fullWidth
-                  label={t('auth.password')}
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  margin="normal"
+          />
+          <TextField
+            fullWidth
+            label={t('auth.password')}
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            margin="normal"
                   disabled={isLoading}
-                />
+          />
 
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  size="large"
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            size="large"
                   sx={{ 
                     mt: 3, 
                     mb: 2,
                     height: 48,
                   }}
-                  disabled={isLoading}
-                >
-                  {isLoading ? <CircularProgress size={24} /> : t('auth.login')}
-                </Button>
-              </form>
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : t('auth.login')}
+          </Button>
+        </form>
 
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="body2">
-                  {t('auth.noAccount')}{' '}
+          <Typography variant="body2">
+            {t('auth.noAccount')}{' '}
                   <Button
                     component={RouterLink}
                     to="/register"
@@ -367,14 +393,14 @@ const Login = () => {
                       },
                     }}
                   >
-                    {t('auth.register')}
+              {t('auth.register')}
                   </Button>
-                </Typography>
-              </Box>
-            </Paper>
+          </Typography>
+        </Box>
+      </Paper>
           </Grid>
         </Grid>
-      </Container>
+    </Container>
     </Box>
   );
 };

@@ -404,96 +404,122 @@ const Register = () => {
               }}
             >
               <Box sx={{ mb: 4, textAlign: 'center' }}>
-                <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
+                <Box 
+                  sx={{ 
+                    mb: 4, 
+                    display: 'flex', 
+                    justifyContent: 'center',
+                    transform: 'scale(1.1)',
+                    '&:hover': {
+                      transform: 'scale(1.15)',
+                      transition: 'transform 0.3s ease-in-out',
+                    },
+                  }}
+                >
                   <Logo size="large" />
                 </Box>
                 <Typography 
                   variant="h5" 
                   component="h1" 
                   gutterBottom
-                  sx={{ fontWeight: 600 }}
+                  sx={{ 
+                    fontWeight: 700,
+                    fontSize: '1.75rem',
+                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    mb: 2,
+                  }}
                 >
-          {t('auth.register')}
-        </Typography>
-                <Typography variant="body2" color="text.secondary">
+                  {t('auth.register')}
+                </Typography>
+                <Typography 
+                  variant="body1" 
+                  color="text.secondary"
+                  sx={{ 
+                    fontSize: '1.1rem',
+                    maxWidth: '80%',
+                    mx: 'auto',
+                  }}
+                >
                   {t('auth.joinCommunity')}
                 </Typography>
               </Box>
         
               <Collapse in={!!error}>
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {error}
+                </Alert>
               </Collapse>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            fullWidth
-            label={t('auth.name')}
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            margin="normal"
-                  error={!!formErrors.name}
-                  helperText={formErrors.name}
-                  disabled={isLoading}
-          />
-          <TextField
-            fullWidth
-            label={t('auth.email')}
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            margin="normal"
-                  error={!!formErrors.email}
-                  helperText={formErrors.email}
-                  disabled={isLoading}
-          />
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  fullWidth
+                  label={t('auth.name')}
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  margin="normal"
+                        error={!!formErrors.name}
+                        helperText={formErrors.name}
+                        disabled={isLoading}
+                />
+                <TextField
+                  fullWidth
+                  label={t('auth.email')}
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  margin="normal"
+                        error={!!formErrors.email}
+                        helperText={formErrors.email}
+                        disabled={isLoading}
+                />
 
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            size="large"
-                  sx={{ 
-                    mt: 3, 
-                    mb: 2,
-                    height: 48,
-                  }}
-                  disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={24} /> : t('auth.register')}
-          </Button>
-        </form>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                        sx={{ 
+                          mt: 3, 
+                          mb: 2,
+                          height: 48,
+                        }}
+                        disabled={isLoading}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : t('auth.register')}
+                </Button>
+              </form>
 
               <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="body2">
-            {t('auth.haveAccount')}{' '}
-                  <Button
-                    component={RouterLink}
-                    to="/login"
-                    color="primary"
-                    variant="text"
-                    sx={{ 
-                      fontWeight: 500,
-                      textTransform: 'none',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                        textDecoration: 'underline',
-                      },
-                    }}
-                  >
-              {t('auth.login')}
-                  </Button>
-          </Typography>
-        </Box>
-      </Paper>
+                <Typography variant="body2">
+                  {t('auth.haveAccount')}{' '}
+                        <Button
+                          component={RouterLink}
+                          to="/login"
+                          color="primary"
+                          variant="text"
+                          sx={{ 
+                            fontWeight: 500,
+                            textTransform: 'none',
+                            '&:hover': {
+                              backgroundColor: 'transparent',
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                  {t('auth.login')}
+                        </Button>
+              </Typography>
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
-    </Container>
+      </Container>
     </Box>
   );
 };
